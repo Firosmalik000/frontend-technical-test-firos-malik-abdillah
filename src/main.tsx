@@ -5,6 +5,9 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 
 import './index.css';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './lib/query-client';
+import { enableMocking } from './mocks/enable-mocking';
 
 const router = createRouter({
   routeTree,
@@ -15,7 +18,7 @@ declare module '@tanstack/react-router' {
     router: typeof router;
   }
 }
-
+await enableMocking();
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
@@ -24,6 +27,8 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>,
 );

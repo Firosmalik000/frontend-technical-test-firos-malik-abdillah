@@ -26,8 +26,8 @@ export function PurchaseRequestsPage() {
   const submitMutation = useMutation({
     mutationFn: (id: string) => submitPurchaseRequest(id),
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ['purchase-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['purchase-requests', id] });
+      queryClient.invalidateQueries({ queryKey: ['purchase-request'] });
+      queryClient.invalidateQueries({ queryKey: ['purchase-request', id] });
     },
   });
   //   console.log(idData);

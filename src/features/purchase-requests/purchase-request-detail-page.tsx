@@ -19,8 +19,13 @@ const PurchaseRequestDetailPage = () => {
   const queryClient = useQueryClient();
 
   const refreshData = () => {
-    queryClient.invalidateQueries({ queryKey: ['purchase-requests'] });
-    queryClient.invalidateQueries({ queryKey: ['purchase-requests', id] });
+    queryClient.invalidateQueries({
+      queryKey: ['purchase-requests'],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: ['purchase-request', id],
+    });
   };
   const submitMutation = useMutation({
     mutationFn: () => submitPurchaseRequest(id),

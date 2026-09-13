@@ -148,7 +148,7 @@ export const purchaseRequestHandlers = [
       return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
     }
     if (data.status !== 'DRAFT') {
-      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 401 });
+      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 400 });
     }
 
     data.status = 'SUBMITTED';
@@ -161,7 +161,7 @@ export const purchaseRequestHandlers = [
       return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
     }
     if (data.status !== 'DRAFT') {
-      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 401 });
+      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 400 });
     }
 
     data.status = 'SUBMITTED';
@@ -174,7 +174,7 @@ export const purchaseRequestHandlers = [
       return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
     }
     if (data.status !== 'SUBMITTED') {
-      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 401 });
+      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 400 });
     }
 
     data.status = 'APPROVED';

@@ -1,23 +1,35 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { purchaseRequestQueries } from './queries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FormatDate } from '@/lib/utils';
 
 import type { PurchaseRequestStatus } from '@/types/purchase-request';
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Check, Pencil, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from '@tanstack/react-router';
 import { PurchaseStatus } from './status';
 import { EmptyState, ErrorState, LoadingState, StatusBadge } from '@/components/common';
 import { Button } from '@/components/ui/button';
+import { submitPurchaseRequest } from '@/api/purchase-requests';
 
 export function PurchaseRequestsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<PurchaseRequestStatus | 'All'>('All');
+  //   const [idData, setIdData] = useState('');
   const purchaseRequestsQuery = useQuery(purchaseRequestQueries.all());
 
+  const queryClient = useQueryClient();
+
+  const submitMutation = useMutation({
+    mutationFn: (id: string) => submitPurchaseRequest(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['purchase-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['purchase-requests', id] });
+    },
+  });
+  //   console.log(idData);
   if (purchaseRequestsQuery.isPending) {
     return <LoadingState title="Loading purchase requests..." />;
   }
@@ -73,6 +85,8 @@ export function PurchaseRequestsPage() {
           <Table className="w-full ">
             <TableHeader>
               <TableRow>
+                <TableHead>No</TableHead>
+                <TableHead>Action</TableHead>
                 <TableHead>Request Number</TableHead>
                 <TableHead>Warehouse</TableHead>
                 <TableHead>Requested By</TableHead>
@@ -83,8 +97,27 @@ export function PurchaseRequestsPage() {
             </TableHeader>
             <TableBody>
               {filterData.length > 0 ? (
-                filterData?.map((data) => (
+                filterData?.map((data, index) => (
                   <TableRow key={data.id}>
+                    <TableCell className="font-medium text-[#043C86]">{index + 1}</TableCell>
+                    <TableCell className="font-medium text-[#043C86]">
+                      <div className="flex gap-x-2">
+                        {data?.status === 'SUBMITTED' ? (
+                          <>-</>
+                        ) : (
+                          <div className="flex gap-x-2">
+                            <Button variant="outline" asChild>
+                              <Link to="/purchase-requests/edit/$id" params={{ id: data.id }}>
+                                <Pencil className="text-sm text-yellow" />
+                              </Link>
+                            </Button>
+                            <Button variant="outline" onClick={() => submitMutation.mutate(data.id)} disabled={submitMutation.isPending}>
+                              <Check className="text-sm text-green-500" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="font-medium text-[#043C86]">
                       <Link to="/purchase-requests/$id" params={{ id: data.id }} className="font-medium text-[#043C86] hover:underline">
                         {data.requestNumber}

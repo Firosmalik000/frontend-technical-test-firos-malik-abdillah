@@ -11,7 +11,7 @@ const CreatePurchaseRequestPage = () => {
   const createMutation = useMutation({
     mutationFn: createPurchaseRequest,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['purchase-request'] });
+      queryClient.invalidateQueries({ queryKey: ['purchase-requests'] });
 
       navigate({ to: '/purchase-requests/$id', params: { id: data.id } });
     },

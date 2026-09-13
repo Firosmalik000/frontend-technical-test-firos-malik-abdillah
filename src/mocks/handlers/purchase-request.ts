@@ -58,14 +58,14 @@ export const purchaseRequestHandlers = [
   }),
   http.post('/api/purchase-requests', async ({ request }) => {
     await delay(500);
-    const body = (await request.json()) as { warehouseId: string; requestedBy: string; items: { productId: string; quantity: string }[] };
+    const body = (await request.json()) as { warehouseId: string; requestedBy: string; items: { productId: string; quantity: number }[] };
     const id = String(purchaseRequests.length + 1);
 
     const warehouse = warehouses.find((item) => item.id === body.warehouseId);
 
     const newItem = {
       id: id,
-      requestNumber: `PR-${id}}`,
+      requestNumber: `PR-${id}`,
       warehouseId: body.warehouseId,
       warehouseName: warehouse?.name ?? '-',
       requestedBy: body.requestedBy,
@@ -85,19 +85,12 @@ export const purchaseRequestHandlers = [
 
     purchaseRequests.push(newItem);
 
-    return HttpResponse.json(purchaseRequests, { status: 201 });
+    return HttpResponse.json(newItem, { status: 201 });
   }),
   http.put('/api/purchase-requests/:id', async ({ params, request }) => {
     await delay(500);
 
-    const body = (await request.json()) as {
-      warehouseId: string;
-      requestedBy: string;
-      items: {
-        productId: string;
-        quantity: number;
-      }[];
-    };
+    const body = (await request.json()) as { warehouseId: string; requestedBy: string; items: { productId: string; quantity: number }[] };
 
     const index = purchaseRequests.findIndex((item) => item.id === params.id);
 
@@ -147,5 +140,18 @@ export const purchaseRequestHandlers = [
     };
 
     return HttpResponse.json(purchaseRequests[index]);
+  }),
+  http.patch('/api/purchase-requests/:id/submit', async ({ params }) => {
+    await delay(500);
+    const data = purchaseRequests.find((item) => item.id === params.id);
+    if (!data) {
+      return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
+    }
+    if (data.status !== 'DRAFT') {
+      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 401 });
+    }
+
+    data.status = 'SUBMITTED';
+    return HttpResponse.json(data);
   }),
 ];

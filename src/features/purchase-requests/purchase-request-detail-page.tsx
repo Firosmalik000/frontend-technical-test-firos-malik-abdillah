@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FormatDate } from '@/lib/utils';
 import { ErrorState, LoadingState, StatusBadge } from '@/components/common';
+import { Button } from '@/components/ui/button';
 
 const PurchaseRequestDetailPage = () => {
   const { id } = useParams({
@@ -25,10 +26,19 @@ const PurchaseRequestDetailPage = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <Link to="/purchase-requests" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="size-4" />
-          Back to Purchase Requests
-        </Link>
+        <div className="flex w-full items-center justify-between">
+          <Link to="/purchase-requests" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+            <ArrowLeft className="size-4" />
+            Back
+          </Link>
+          {data.status === 'DRAFT' && (
+            <Button asChild>
+              <Link to="/purchase-requests/edit/$id" params={{ id: data.id }}>
+                Edit
+              </Link>
+            </Button>
+          )}
+        </div>
 
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -37,8 +47,6 @@ const PurchaseRequestDetailPage = () => {
 
               <StatusBadge label={data.status} variant={PurchaseStatus[data.status]} />
             </div>
-
-            <p className="mt-1 text-sm text-muted-foreground">Purchase request details and requested items.</p>
           </div>
         </div>
       </div>

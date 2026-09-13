@@ -15,6 +15,7 @@ import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
 import { Route as PurchaseOrdersIndexRouteImport } from './routes/purchase-orders/index'
 import { Route as PurchaseRequestsIndexRouteImport } from './routes/purchase-requests/index'
 import { Route as PurchaseRequestsIdRouteImport } from './routes/purchase-requests/$id'
+import { Route as PurchaseRequestsNewRouteImport } from './routes/purchase-requests/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,10 +47,16 @@ const PurchaseRequestsIdRoute = PurchaseRequestsIdRouteImport.update({
   path: '/purchase-requests/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PurchaseRequestsNewRoute = PurchaseRequestsNewRouteImport.update({
+  id: '/purchase-requests/new',
+  path: '/purchase-requests/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/purchase-requests/$id': typeof PurchaseRequestsIdRoute
+  '/purchase-requests/new': typeof PurchaseRequestsNewRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/inventory/': typeof InventoryIndexRoute
   '/purchase-orders/': typeof PurchaseOrdersIndexRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/purchase-requests/$id': typeof PurchaseRequestsIdRoute
+  '/purchase-requests/new': typeof PurchaseRequestsNewRoute
   '/dashboard': typeof DashboardIndexRoute
   '/inventory': typeof InventoryIndexRoute
   '/purchase-orders': typeof PurchaseOrdersIndexRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/purchase-requests/$id': typeof PurchaseRequestsIdRoute
+  '/purchase-requests/new': typeof PurchaseRequestsNewRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/inventory/': typeof InventoryIndexRoute
   '/purchase-orders/': typeof PurchaseOrdersIndexRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/purchase-requests/$id'
+    | '/purchase-requests/new'
     | '/dashboard/'
     | '/inventory/'
     | '/purchase-orders/'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/purchase-requests/$id'
+    | '/purchase-requests/new'
     | '/dashboard'
     | '/inventory'
     | '/purchase-orders'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/purchase-requests/$id'
+    | '/purchase-requests/new'
     | '/dashboard/'
     | '/inventory/'
     | '/purchase-orders/'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PurchaseRequestsIdRoute: typeof PurchaseRequestsIdRoute
+  PurchaseRequestsNewRoute: typeof PurchaseRequestsNewRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   InventoryIndexRoute: typeof InventoryIndexRoute
   PurchaseOrdersIndexRoute: typeof PurchaseOrdersIndexRoute
@@ -152,12 +165,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PurchaseRequestsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/purchase-requests/new': {
+      id: '/purchase-requests/new'
+      path: '/purchase-requests/new'
+      fullPath: '/purchase-requests/new'
+      preLoaderRoute: typeof PurchaseRequestsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PurchaseRequestsIdRoute: PurchaseRequestsIdRoute,
+  PurchaseRequestsNewRoute: PurchaseRequestsNewRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   InventoryIndexRoute: InventoryIndexRoute,
   PurchaseOrdersIndexRoute: PurchaseOrdersIndexRoute,

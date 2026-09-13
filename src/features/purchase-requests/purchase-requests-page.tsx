@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Link } from '@tanstack/react-router';
 import { PurchaseStatus } from './status';
 import { EmptyState, ErrorState, LoadingState, StatusBadge } from '@/components/common';
+import { Button } from '@/components/ui/button';
 
 export function PurchaseRequestsPage() {
   const [search, setSearch] = useState('');
@@ -39,9 +40,11 @@ export function PurchaseRequestsPage() {
   });
   return (
     <div className="space-y-6">
-      <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Purchase Requests</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Manage and monitor procurement requests.</p>
+        <Button asChild>
+          <Link to="/purchase-requests/new">Create</Link>
+        </Button>
       </div>
       {/* filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

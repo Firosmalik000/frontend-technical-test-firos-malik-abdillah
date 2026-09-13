@@ -46,8 +46,6 @@ const PurchaseRequestForm = ({ onSubmit, isSubmitting = false, defaultValues }: 
   const {
     handleSubmit,
     register,
-    watch,
-    setValue,
     control,
     formState: { errors },
   } = useForm<PurchaseRequestFormValues>({
@@ -65,8 +63,6 @@ const PurchaseRequestForm = ({ onSubmit, isSubmitting = false, defaultValues }: 
     },
   });
   const { fields, append, remove } = useFieldArray({ control, name: 'items' });
-  const warehouseId = watch('warehouseId');
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Card>
@@ -80,7 +76,7 @@ const PurchaseRequestForm = ({ onSubmit, isSubmitting = false, defaultValues }: 
               Warehouse
             </label>
 
-            <Select
+            {/* <Select
               value={warehouseId}
               onValueChange={(value) => {
                 setValue('warehouseId', value, {
@@ -99,7 +95,26 @@ const PurchaseRequestForm = ({ onSubmit, isSubmitting = false, defaultValues }: 
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
+            <Controller
+              control={control}
+              name="warehouseId"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger id="warehouse">
+                    <SelectValue placeholder="Select warehouse" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {warehouses.map((warehouse) => (
+                      <SelectItem key={warehouse.id} value={warehouse.id}>
+                        {warehouse.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
 
             {errors.warehouseId && <p className="text-sm text-red-600">{errors.warehouseId.message}</p>}
           </div>

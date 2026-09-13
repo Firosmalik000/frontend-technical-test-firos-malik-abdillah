@@ -14,7 +14,7 @@ import { EmptyState, ErrorState, LoadingState, StatusBadge } from '@/components/
 
 export function PurchaseRequestsPage() {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<PurchaseRequestStatus | string>('All');
+  const [statusFilter, setStatusFilter] = useState<PurchaseRequestStatus | 'All'>('All');
   const purchaseRequestsQuery = useQuery(purchaseRequestQueries.all());
 
   if (purchaseRequestsQuery.isPending) {
@@ -25,7 +25,9 @@ export function PurchaseRequestsPage() {
     return <ErrorState title="Failed to load purchase requests" desc="Purchase request data could not be loaded." onRetry={() => void purchaseRequestsQuery.refetch()} />;
   }
   const datas = purchaseRequestsQuery.data;
-
+  if (datas.length === 0) {
+    return <EmptyState title="No purchase requests yet" description="Purchase requests will appear here once they are created." />;
+  }
   const filterData = datas.filter((item) => {
     const searchValue = search.toLowerCase();
 
@@ -48,7 +50,7 @@ export function PurchaseRequestsPage() {
 
           <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search purchase requests..." className="pl-9" />
         </div>
-        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as PurchaseRequestStatus | 'ALL')}>
+        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as PurchaseRequestStatus | 'All')}>
           <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -97,7 +99,7 @@ export function PurchaseRequestsPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={6}>
-                    <EmptyState title="No purchase requests yet" description="Purchase requests will appear here once they are created." />
+                    <EmptyState title="No matching purchase requests" description="Try changing your search or status filter." />
                   </TableCell>
                 </TableRow>
               )}

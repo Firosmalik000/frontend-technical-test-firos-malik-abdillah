@@ -67,10 +67,6 @@ export function DashboardPage() {
           })}
         </div>
       </section>
-
-      <section>
-        <h2 className="text-sm font-semibold">Recent Purchase Requests</h2>
-      </section>
     </div>
   );
 }

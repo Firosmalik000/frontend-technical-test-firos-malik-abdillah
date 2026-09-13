@@ -8,4 +8,22 @@ export const purchaseRequestHandlers = [
 
     return HttpResponse.json(purchaseRequests);
   }),
+  // request by id
+  http.get(`/api/purchase-requests/:id`, async ({ params }) => {
+    await delay(500);
+
+    const purchaseRequestById = purchaseRequests.find((item) => item.id === params.id);
+    if (!purchaseRequestById) {
+      return HttpResponse.json(
+        {
+          message: 'Purchase Request not found',
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    return HttpResponse.json(purchaseRequestById);
+  }),
 ];

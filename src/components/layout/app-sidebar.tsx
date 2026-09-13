@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Boxes, ClipboardList, LayoutDashboard, ShoppingCart } from 'lucide-react';
-
+import { getCurrentRole } from '@/lib/role';
 const navigation = [
   {
     label: 'Dashboard',
@@ -24,6 +24,10 @@ const navigation = [
   },
 ];
 const AppSidebar = () => {
+  const role = getCurrentRole();
+
+  const visibleNavigation = role === 'APPROVER' ? navigation.filter((item) => item.to === '/purchase-requests') : navigation;
+
   return (
     <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col bg-[#043C86] text-white ">
       <div className="flex h-16 items-center border-b border-white/10 px-5">
@@ -34,7 +38,7 @@ const AppSidebar = () => {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 p-3">
-        {navigation.map((item) => {
+        {visibleNavigation.map((item) => {
           const Icon = item.icon;
           return (
             <Link

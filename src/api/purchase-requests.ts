@@ -56,7 +56,7 @@ export async function updatePurchaseRequest(
   const response = await fetch(`/api/purchase-requests/${id}`, {
     method: 'PUT',
     headers: {
-      'content-type': 'application.json',
+      'content-type': 'application/json',
     },
     body: JSON.stringify(data),
   });
@@ -66,7 +66,7 @@ export async function updatePurchaseRequest(
   return response.json();
 }
 
-export async function submitPurchaseRequest(id: string): Promise<PurchaseRequestInput> {
+export async function submitPurchaseRequest(id: string): Promise<PurchaseRequest> {
   const response = await fetch(`/api/purchase-requests/${id}/submit`, {
     method: 'PATCH',
   });
@@ -74,5 +74,28 @@ export async function submitPurchaseRequest(id: string): Promise<PurchaseRequest
   if (!response.ok) {
     throw new Error('failed to submit purchase request');
   }
+  return response.json();
+}
+export async function approvePurchaseRequest(id: string): Promise<PurchaseRequest> {
+  const response = await fetch(`/api/purchase-requests/${id}/approve`, {
+    method: 'PATCH',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to approve purchase request');
+  }
+
+  return response.json();
+}
+
+export async function rejectPurchaseRequest(id: string): Promise<PurchaseRequest> {
+  const response = await fetch(`/api/purchase-requests/${id}/reject`, {
+    method: 'PATCH',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to reject purchase request');
+  }
+
   return response.json();
 }

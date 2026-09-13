@@ -1,4 +1,9 @@
+import { getCurrentRole, setRole, type UserRole } from '@/lib/role';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+
 const HeaderApp = () => {
+  const role = getCurrentRole();
+
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-[#E6E9ED] bg-white px-6">
       <div>
@@ -13,7 +18,17 @@ const HeaderApp = () => {
         <div className="leading-tight">
           <p className="text-sm font-medium">John Doe</p>
 
-          <p className="text-xs text-muted-foreground">User</p>
+          <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
+            <SelectTrigger className="h-8 w-32">
+              <SelectValue />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="USER">User</SelectItem>
+
+              <SelectItem value="APPROVER">Approver</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </header>

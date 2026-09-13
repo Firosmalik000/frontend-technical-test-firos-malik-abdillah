@@ -13,6 +13,7 @@ import { PurchaseStatus } from './status';
 import { EmptyState, ErrorState, LoadingState, StatusBadge } from '@/components/common';
 import { Button } from '@/components/ui/button';
 import { submitPurchaseRequest } from '@/api/purchase-requests';
+import { getCurrentRole } from '@/lib/role';
 
 export function PurchaseRequestsPage() {
   const [search, setSearch] = useState('');
@@ -50,13 +51,17 @@ export function PurchaseRequestsPage() {
 
     return match && matchStatus;
   });
+  const role = getCurrentRole();
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Purchase Requests</h1>
-        <Button asChild>
-          <Link to="/purchase-requests/new">Create</Link>
-        </Button>
+        {role === 'USER' && (
+          <Button asChild>
+            <Link to="/purchase-requests/new">Create</Link>
+          </Button>
+        )}
       </div>
       {/* filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -102,19 +107,20 @@ export function PurchaseRequestsPage() {
                     <TableCell className="font-medium text-[#043C86]">{index + 1}</TableCell>
                     <TableCell className="font-medium text-[#043C86]">
                       <div className="flex gap-x-2">
-                        {data?.status === 'SUBMITTED' ? (
-                          <>-</>
-                        ) : (
+                        {data.status === 'DRAFT' && role === 'USER' ? (
                           <div className="flex gap-x-2">
                             <Button variant="outline" asChild>
                               <Link to="/purchase-requests/edit/$id" params={{ id: data.id }}>
-                                <Pencil className="text-sm text-yellow" />
+                                <Pencil className="text-sm" />
                               </Link>
                             </Button>
+
                             <Button variant="outline" onClick={() => submitMutation.mutate(data.id)} disabled={submitMutation.isPending}>
                               <Check className="text-sm text-green-500" />
                             </Button>
                           </div>
+                        ) : (
+                          <>-</>
                         )}
                       </div>
                     </TableCell>

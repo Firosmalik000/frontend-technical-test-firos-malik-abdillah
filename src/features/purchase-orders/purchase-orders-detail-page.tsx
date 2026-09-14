@@ -3,7 +3,7 @@ import { Link, useParams } from '@tanstack/react-router';
 import { ArrowLeft } from 'lucide-react';
 
 import { purchaseOrderQueries } from './queries';
-import { ErrorState, LoadingState } from '@/components/common';
+import { ErrorState, LoadingState, StatusBadge } from '@/components/common';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -14,13 +14,14 @@ import { useState } from 'react';
 import { recordGoodReceipt } from '@/api/purchase-order';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PurchaseOrderStatusVariant } from './status';
 
 const PurchaseOrderDetailPage = () => {
   const { id } = useParams({
     from: '/purchase-orders/$id',
   });
   const [receiveQty, setReceiveQty] = useState<Record<string, number>>({});
-
+  const [validationError, setValidationError] = useState('');
   const purchaseOrderQuery = useQuery(purchaseOrderQueries.detail(id));
   const role = getCurrentRole();
   const queryClient = useQueryClient();
@@ -42,10 +43,11 @@ const PurchaseOrderDetailPage = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ['purchase-order', id],
+        queryKey: ['purchase-orders', id],
       });
 
       setReceiveQty({});
+      setValidationError('');
     },
   });
   if (purchaseOrderQuery.isPending) {
@@ -67,7 +69,8 @@ const PurchaseOrderDetailPage = () => {
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{data.poNumber}</h1>
 
-        <span className="rounded-md border px-2 py-1 text-xs font-medium">{data.status}</span>
+        {/* <span className="rounded-md border px-2 py-1 text-xs font-medium">{data.status}</span> */}
+        <StatusBadge label={data.status} variant={PurchaseOrderStatusVariant[data.status]} />
       </div>
 
       <Card>
@@ -179,27 +182,42 @@ const PurchaseOrderDetailPage = () => {
 
                     <Input
                       type="number"
-                      min="0"
+                      min="1"
                       max={remaining}
                       value={receiveQty[item.productId] ?? ''}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        setValidationError('');
+                        receiptMutation.reset();
                         setReceiveQty({
                           ...receiveQty,
                           [item.productId]: Number(event.target.value),
-                        })
-                      }
+                        });
+                      }}
                     />
                   </div>
                 </div>
               );
             })}
 
-            {receiptMutation.isError && <p className="text-sm text-red-600">Failed to record goods receipt.</p>}
+            {/* {validationError && <p className="text-sm text-red-600">{validationError}</p>}
+
+            {receiptMutation.isError && <p className="text-sm text-red-600">Failed to record goods receipt.</p>} */}
+
+            {receiptMutation.isSuccess ? (
+              <p className="text-sm text-green-600">Goods receipt recorded successfully.</p>
+            ) : receiptMutation.isError ? (
+              <p className="text-sm text-red-600">Failed to record goods receipt.</p>
+            ) : validationError ? (
+              <p className="text-sm text-red-600">{validationError}</p>
+            ) : null}
 
             <div className="flex justify-end">
               <Button
                 disabled={receiptMutation.isPending}
+
                 onClick={() => {
+                  receiptMutation.reset();
+                  setValidationError('');
                   const items = data.items
                     .map((item) => ({
                       productId: item.productId,
@@ -208,25 +226,27 @@ const PurchaseOrderDetailPage = () => {
                     .filter((item) => item.quantity > 0);
 
                   if (items.length === 0) {
+                    setValidationError('Enter at least one receive quantity.');
                     return;
                   }
 
-                  const invalid = items.some((receiptItem) => {
-                    const item = data.items.find((product) => product.productId === receiptItem.productId);
+                  for (const receivedItem of items) {
+                    const orderItem = data.items.find((item) => item.productId === receivedItem.productId);
 
-                    if (!item) {
-                      return true;
+                    if (!orderItem) {
+                      setValidationError('Product not found.');
+                      return;
                     }
 
-                    const remaining = item.orderedQuantity - item.receivedQuantity;
+                    const remainingQty = orderItem.orderedQuantity - orderItem.receivedQuantity;
 
-                    return receiptItem.quantity <= 0 || receiptItem.quantity > remaining;
-                  });
-
-                  if (invalid) {
-                    return;
+                    if (receivedItem.quantity > remainingQty) {
+                      setValidationError(`${orderItem.productName} can only receive up to ${remainingQty} ${orderItem.unit}.`);
+                      return;
+                    }
                   }
 
+                  setValidationError('');
                   receiptMutation.mutate(items);
                 }}
               >

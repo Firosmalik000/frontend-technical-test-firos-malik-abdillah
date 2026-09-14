@@ -12,9 +12,10 @@ import { Input } from '@/components/ui/input';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-import { EmptyState, ErrorState, LoadingState } from '@/components/common';
+import { EmptyState, ErrorState, LoadingState, StatusBadge } from '@/components/common';
 
 import { FormatDate } from '@/lib/utils';
+import { PurchaseOrderStatusVariant } from './status';
 
 export default function PurchaseOrdersPage() {
   const [search, setSearch] = useState('');
@@ -103,7 +104,9 @@ export default function PurchaseOrdersPage() {
 
                   <TableCell>{item.items.length}</TableCell>
 
-                  <TableCell>{item.status}</TableCell>
+                  <TableCell>
+                    <StatusBadge label={item.status} variant={PurchaseOrderStatusVariant[item.status]} />
+                  </TableCell>
 
                   <TableCell>{FormatDate(item.createdAt)}</TableCell>
                 </TableRow>

@@ -180,7 +180,7 @@ export const purchaseRequestHandlers = [
     data.status = 'APPROVED';
     return HttpResponse.json(data);
   }),
-  http.patch('/api/purchase-requests/:id/reject', async ({ params }) => {
+  http.patch('/api/purchase-requests/:id/reject', async ({ params, request }) => {
     await delay(500);
 
     const data = purchaseRequests.find((item) => item.id === params.id);
@@ -193,7 +193,15 @@ export const purchaseRequestHandlers = [
       return HttpResponse.json({ message: 'Only SUBMITTED request can be rejected' }, { status: 400 });
     }
 
+    const body = (await request.json()) as {
+      rejectionReason: string;
+    };
+
+    const rejectionReason = body.rejectionReason?.trim();
+
+    if (!rejectionReason) return HttpResponse.json({ message: 'Reason is required for rejection' }, { status: 400 });
     data.status = 'REJECTED';
+    data.rejectionReason = rejectionReason;
 
     return HttpResponse.json(data);
   }),

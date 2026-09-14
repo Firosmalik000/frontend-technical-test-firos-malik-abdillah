@@ -10,11 +10,17 @@ import { ErrorState, LoadingState, StatusBadge } from '@/components/common';
 import { Button } from '@/components/ui/button';
 import { getCurrentRole } from '@/lib/role';
 import { approvePurchaseRequest, rejectPurchaseRequest, submitPurchaseRequest } from '@/api/purchase-requests';
+import { useState } from 'react';
 
 const PurchaseRequestDetailPage = () => {
   const { id } = useParams({
     from: '/purchase-requests/$id',
   });
+  const [showRejectForm, setShowRejectForm] = useState(false);
+
+  const [rejectionReason, setRejectionReason] = useState('');
+
+  const [rejectionError, setRejectionError] = useState('');
   const role = getCurrentRole();
   const queryClient = useQueryClient();
 
@@ -38,8 +44,13 @@ const PurchaseRequestDetailPage = () => {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: () => rejectPurchaseRequest(id),
-    onSuccess: refreshData,
+    mutationFn: (reason: string) => rejectPurchaseRequest(id, reason),
+    onSuccess: () => {
+      refreshData();
+      setShowRejectForm(false);
+      setRejectionReason('');
+      setRejectionError('');
+    },
   });
 
   const purchaseRequestsQuery = useQuery(purchaseRequestQueries.detail(id));
@@ -104,19 +115,78 @@ const PurchaseRequestDetailPage = () => {
                 <Button
                   variant="destructive"
                   onClick={() => {
-                    if (window.confirm('Reject this purchase request?')) {
-                      rejectMutation.mutate();
-                    }
+                    setShowRejectForm(true);
+                    setRejectionError('');
                   }}
                   disabled={approveMutation.isPending || rejectMutation.isPending}
                 >
-                  {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
+                  Reject
                 </Button>
               </>
             )}
           </div>
         </div>
+        {showRejectForm && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Reject Purchase Request</CardTitle>
+            </CardHeader>
 
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="rejectionReason" className="text-sm font-medium">
+                  Rejection Reason
+                </label>
+
+                <textarea
+                  id="rejectionReason"
+                  value={rejectionReason}
+                  onChange={(event) => {
+                    setRejectionReason(event.target.value);
+                    setRejectionError('');
+                  }}
+                  placeholder="Enter rejection reason..."
+                  className="min-h-24 w-full rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+
+                {rejectionError && <p className="text-sm text-red-600">{rejectionError}</p>}
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowRejectForm(false);
+                    setRejectionReason('');
+                    setRejectionError('');
+                  }}
+                  disabled={rejectMutation.isPending}
+                >
+                  Cancel
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    const reason = rejectionReason.trim();
+
+                    if (!reason) {
+                      setRejectionError('Rejection reason is required.');
+                      return;
+                    }
+
+                    if (window.confirm('Reject this purchase request?')) {
+                      rejectMutation.mutate(reason);
+                    }
+                  }}
+                  disabled={rejectMutation.isPending}
+                >
+                  {rejectMutation.isPending ? 'Rejecting...' : 'Confirm Reject'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
@@ -155,6 +225,18 @@ const PurchaseRequestDetailPage = () => {
           </dl>
         </CardContent>
       </Card>
+
+      {data.status === 'REJECTED' && data.rejectionReason && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Rejection Reason</CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <p className="text-sm">{data.rejectionReason}</p>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

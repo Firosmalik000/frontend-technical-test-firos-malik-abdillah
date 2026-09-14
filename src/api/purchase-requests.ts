@@ -88,9 +88,13 @@ export async function approvePurchaseRequest(id: string): Promise<PurchaseReques
   return response.json();
 }
 
-export async function rejectPurchaseRequest(id: string): Promise<PurchaseRequest> {
+export async function rejectPurchaseRequest(id: string, rejectionReason: string): Promise<PurchaseRequest> {
   const response = await fetch(`/api/purchase-requests/${id}/reject`, {
     method: 'PATCH',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ rejectionReason }),
   });
 
   if (!response.ok) {

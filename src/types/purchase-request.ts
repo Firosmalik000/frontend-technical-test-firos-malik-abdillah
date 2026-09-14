@@ -17,4 +17,5 @@ export type PurchaseRequest = {
   status: PurchaseRequestStatus;
   items: PurchaseRequestItem[];
   createdAt: string;
+  rejectionReason?: string;
 };

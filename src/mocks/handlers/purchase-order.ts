@@ -1,5 +1,6 @@
 import { delay, http, HttpResponse } from 'msw';
 import { purchaseOrders } from '../data/purchase-order';
+import { inventories } from '../data/inventory';
 
 export const purchaseOrderHandler = [
   http.get('/api/purchase-orders', async () => {
@@ -50,6 +51,9 @@ export const purchaseOrderHandler = [
       if (!orderItem) {
         return HttpResponse.json({ message: 'Product not found' }, { status: 400 });
       }
+      const inventory = inventories.find((item) => item.productId === receivedItem.productId && item.warehouseId === purchaseOrder.warehouseId);
+
+      if (!inventory) return HttpResponse.json({ message: 'Inventory item is not found' }, { status: 400 });
 
       const remainingQty = orderItem.orderedQuantity - orderItem.receivedQuantity;
 
@@ -60,9 +64,12 @@ export const purchaseOrderHandler = [
 
     for (const receivedItem of body.items) {
       const orderItem = purchaseOrder.items.find((item) => item.productId === receivedItem.productId);
+      const inventoryItem = inventories.find((item) => item.productId === receivedItem.productId && item.warehouseId === purchaseOrder.warehouseId);
 
-      if (orderItem) {
+      if (orderItem && inventoryItem) {
         orderItem.receivedQuantity += receivedItem.quantity;
+
+        inventoryItem.currentStock += receivedItem.quantity;
       }
     }
 

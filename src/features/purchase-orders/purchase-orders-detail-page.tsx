@@ -45,6 +45,9 @@ const PurchaseOrderDetailPage = () => {
       queryClient.invalidateQueries({
         queryKey: ['purchase-orders', id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['inventory'],
+      });
 
       setReceiveQty({});
       setValidationError('');

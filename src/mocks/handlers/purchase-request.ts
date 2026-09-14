@@ -141,19 +141,7 @@ export const purchaseRequestHandlers = [
 
     return HttpResponse.json(purchaseRequests[index]);
   }),
-  http.patch('/api/purchase-requests/:id/submit', async ({ params }) => {
-    await delay(500);
-    const data = purchaseRequests.find((item) => item.id === params.id);
-    if (!data) {
-      return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
-    }
-    if (data.status !== 'DRAFT') {
-      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 400 });
-    }
 
-    data.status = 'SUBMITTED';
-    return HttpResponse.json(data);
-  }),
   http.patch('/api/purchase-requests/:id/submit', async ({ params }) => {
     await delay(500);
     const data = purchaseRequests.find((item) => item.id === params.id);
@@ -161,7 +149,7 @@ export const purchaseRequestHandlers = [
       return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
     }
     if (data.status !== 'DRAFT') {
-      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 400 });
+      return HttpResponse.json({ message: 'Only SUBMITTED request can be approved' }, { status: 400 });
     }
 
     data.status = 'SUBMITTED';

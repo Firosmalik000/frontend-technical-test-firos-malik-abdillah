@@ -1,4 +1,4 @@
-import { getPurchaseOrders } from '@/api/purchase-order';
+import { getPurchaseOrders, getPurchaseOrdersById } from '@/api/purchase-order';
 import { queryOptions } from '@tanstack/react-query';
 
 export const purchaseOrderQueries = {
@@ -6,5 +6,10 @@ export const purchaseOrderQueries = {
     queryOptions({
       queryKey: ['purchase-orders'],
       queryFn: getPurchaseOrders,
+    }),
+  detail: (id: string) =>
+    queryOptions({
+      queryKey: ['purchase-orders', id],
+      queryFn: () => getPurchaseOrdersById(id),
     }),
 };

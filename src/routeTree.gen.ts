@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
 import { Route as PurchaseOrdersIndexRouteImport } from './routes/purchase-orders/index'
+import { Route as PurchaseOrdersIdRouteImport } from './routes/purchase-orders/$id'
 import { Route as PurchaseRequestsIndexRouteImport } from './routes/purchase-requests/index'
 import { Route as PurchaseRequestsIdRouteImport } from './routes/purchase-requests/$id'
 import { Route as PurchaseRequestsNewRouteImport } from './routes/purchase-requests/new'
@@ -38,6 +39,11 @@ const PurchaseOrdersIndexRoute = PurchaseOrdersIndexRouteImport.update({
   path: '/purchase-orders/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PurchaseOrdersIdRoute = PurchaseOrdersIdRouteImport.update({
+  id: '/purchase-orders/$id',
+  path: '/purchase-orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PurchaseRequestsIndexRoute = PurchaseRequestsIndexRouteImport.update({
   id: '/purchase-requests/',
   path: '/purchase-requests/',
@@ -61,6 +67,7 @@ const PurchaseRequestsEditIdRoute = PurchaseRequestsEditIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/purchase-orders/$id': typeof PurchaseOrdersIdRoute
   '/purchase-requests/$id': typeof PurchaseRequestsIdRoute
   '/purchase-requests/new': typeof PurchaseRequestsNewRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/purchase-orders/$id': typeof PurchaseOrdersIdRoute
   '/purchase-requests/$id': typeof PurchaseRequestsIdRoute
   '/purchase-requests/new': typeof PurchaseRequestsNewRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/purchase-orders/$id': typeof PurchaseOrdersIdRoute
   '/purchase-requests/$id': typeof PurchaseRequestsIdRoute
   '/purchase-requests/new': typeof PurchaseRequestsNewRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/purchase-orders/$id'
     | '/purchase-requests/$id'
     | '/purchase-requests/new'
     | '/dashboard/'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/purchase-orders/$id'
     | '/purchase-requests/$id'
     | '/purchase-requests/new'
     | '/dashboard'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/purchase-orders/$id'
     | '/purchase-requests/$id'
     | '/purchase-requests/new'
     | '/dashboard/'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PurchaseOrdersIdRoute: typeof PurchaseOrdersIdRoute
   PurchaseRequestsIdRoute: typeof PurchaseRequestsIdRoute
   PurchaseRequestsNewRoute: typeof PurchaseRequestsNewRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PurchaseOrdersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/purchase-orders/$id': {
+      id: '/purchase-orders/$id'
+      path: '/purchase-orders/$id'
+      fullPath: '/purchase-orders/$id'
+      preLoaderRoute: typeof PurchaseOrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/purchase-requests/': {
       id: '/purchase-requests/'
       path: '/purchase-requests'
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PurchaseOrdersIdRoute: PurchaseOrdersIdRoute,
   PurchaseRequestsIdRoute: PurchaseRequestsIdRoute,
   PurchaseRequestsNewRoute: PurchaseRequestsNewRoute,
   DashboardIndexRoute: DashboardIndexRoute,

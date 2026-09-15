@@ -7,3 +7,10 @@ export const FormatDate = (dateString: string) => {
     year: 'numeric',
   }).format(new Date(dateString));
 };
+
+export const FormatStatus = (status: string) => {
+  return status
+    .toLowerCase()
+    .replace('_', ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};

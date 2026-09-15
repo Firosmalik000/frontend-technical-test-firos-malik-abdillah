@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-import { FormatDate } from '@/lib/utils';
+import { FormatDate, FormatStatus } from '@/lib/utils';
 import { getCurrentRole } from '@/lib/role';
 import { useState } from 'react';
 import { recordGoodReceipt } from '@/api/purchase-order';
@@ -72,8 +72,7 @@ const PurchaseOrderDetailPage = () => {
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{data.poNumber}</h1>
 
-        {/* <span className="rounded-md border px-2 py-1 text-xs font-medium">{data.status}</span> */}
-        <StatusBadge label={data.status} variant={PurchaseOrderStatusVariant[data.status]} />
+        <StatusBadge label={FormatStatus(data.status)} variant={PurchaseOrderStatusVariant[data.status]} />
       </div>
 
       <Card>
@@ -202,10 +201,6 @@ const PurchaseOrderDetailPage = () => {
               );
             })}
 
-            {/* {validationError && <p className="text-sm text-red-600">{validationError}</p>}
-
-            {receiptMutation.isError && <p className="text-sm text-red-600">Failed to record goods receipt.</p>} */}
-
             {receiptMutation.isSuccess ? (
               <p className="text-sm text-green-600">Goods receipt recorded successfully.</p>
             ) : receiptMutation.isError ? (
@@ -216,6 +211,7 @@ const PurchaseOrderDetailPage = () => {
 
             <div className="flex justify-end">
               <Button
+                className="w-full sm:w-auto"
                 disabled={receiptMutation.isPending}
 
                 onClick={() => {

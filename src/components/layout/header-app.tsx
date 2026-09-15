@@ -5,21 +5,21 @@ const HeaderApp = () => {
   const role = getCurrentRole();
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-[#E6E9ED] bg-white px-6">
-      <div>
+    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-[#E6E9ED] bg-white px-3 sm:px-6">
+      <div className="hidden sm:block">
         <p className="text-sm font-medium text-foreground">Procurement Management</p>
 
-        <p className="text-xs text-muted-foreground">Manage procurement and inventory operations</p>
+        <p className="hidden text-xs text-muted-foreground lg:block">Manage procurement and inventory operations</p>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="flex size-8 items-center justify-center rounded-full bg-[#043C86] text-xs font-semibold text-white">JD</div>
+      <div className="ml-auto flex items-center gap-2 sm:ml-0 sm:gap-3">
+        <div className="hidden size-8 items-center justify-center rounded-full bg-[#043C86] text-xs font-semibold text-white sm:flex">JD</div>
 
         <div className="leading-tight">
-          <p className="text-sm font-medium">John Doe</p>
+          <p className="hidden text-sm font-medium md:block">John Doe</p>
 
           <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
-            <SelectTrigger className="h-8 w-32">
+            <SelectTrigger className="h-8 w-28 sm:w-32">
               <SelectValue />
             </SelectTrigger>
 

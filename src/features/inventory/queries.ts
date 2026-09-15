@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import { getInventories, getInventoriesById } from '@/api/inventory';
+import { getInventories, getInventoriyById } from '@/api/inventory';
 
 export const inventoryQueries = {
   all: () =>
@@ -10,6 +10,6 @@ export const inventoryQueries = {
   detail: (id: string) =>
     queryOptions({
       queryKey: ['inventory', id],
-      queryFn: () => getInventoriesById(id),
+      queryFn: () => getInventoriyById(id),
     }),
 };

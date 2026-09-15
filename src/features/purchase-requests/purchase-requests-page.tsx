@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { purchaseRequestQueries } from './queries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FormatDate } from '@/lib/utils';
+import { FormatDate, FormatStatus } from '@/lib/utils';
 
 import type { PurchaseRequestStatus } from '@/types/purchase-request';
 import { useState } from 'react';
@@ -68,10 +68,10 @@ export function PurchaseRequestsPage() {
         <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search purchase requests..." className="pl-9" />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search purchase requests..." aria-label="Search purchase requests" className="pl-9" />
         </div>
         <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as PurchaseRequestStatus | 'All')}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-48" aria-label="Filter by status">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
 
@@ -109,13 +109,13 @@ export function PurchaseRequestsPage() {
                       <div className="flex gap-x-2">
                         {data.status === 'DRAFT' && role === 'USER' ? (
                           <div className="flex gap-x-2">
-                            <Button variant="outline" asChild>
+                            <Button variant="outline" asChild aria-label="Edit purchase request">
                               <Link to="/purchase-requests/edit/$id" params={{ id: data.id }}>
                                 <Pencil className="text-sm" />
                               </Link>
                             </Button>
 
-                            <Button variant="outline" onClick={() => submitMutation.mutate(data.id)} disabled={submitMutation.isPending}>
+                            <Button aria-label="Submit purchase request" variant="outline" onClick={() => submitMutation.mutate(data.id)} disabled={submitMutation.isPending}>
                               <Check className="text-sm text-green-500" />
                             </Button>
                           </div>
@@ -133,7 +133,7 @@ export function PurchaseRequestsPage() {
                     <TableCell className="font-medium text-[#043C86]">{data.requestedBy}</TableCell>
                     <TableCell className="font-medium text-[#043C86]">{data.items.length}</TableCell>
                     <TableCell className="font-medium text-[#043C86]">
-                      <StatusBadge label={data.status} variant={PurchaseStatus[data.status]} />
+                      <StatusBadge label={FormatStatus(data.status)} variant={PurchaseStatus[data.status]} />
                     </TableCell>
                     <TableCell className="font-medium text-[#043C86]">{FormatDate(data.createdAt)}</TableCell>
                   </TableRow>

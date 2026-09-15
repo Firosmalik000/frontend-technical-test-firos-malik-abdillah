@@ -10,7 +10,7 @@ export function RootLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <HeaderApp />
 
-        <main className=" p-6">
+        <main className="p-3 sm:p-6">
           <Outlet />
         </main>
       </div>

@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { PurchaseStatus } from './status';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FormatDate } from '@/lib/utils';
+import { FormatDate, FormatStatus } from '@/lib/utils';
 import { ErrorState, LoadingState, StatusBadge } from '@/components/common';
 import { Button } from '@/components/ui/button';
 import { getCurrentRole } from '@/lib/role';
@@ -65,19 +65,14 @@ const PurchaseRequestDetailPage = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="flex w-full items-center justify-between">
+        {/* <div className="flex w-full items-center justify-between"> */}
+        <div className="flex w-full flex-col gap-2 sm:gap-2 sm:flex-row sm:items-center sm:justify-between">
           <Link to="/purchase-requests" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
             <ArrowLeft className="size-4" />
             Back
           </Link>
-          {/* {data.status === 'DRAFT' && (
-            <Button asChild>
-              <Link to="/purchase-requests/edit/$id" params={{ id: data.id }}>
-                Edit
-              </Link>
-            </Button>
-          )} */}
-          <div className="flex gap-2">
+
+          <div className="flex flex-wrap gap-2">
             {role === 'USER' && data.status === 'DRAFT' && (
               <>
                 <Button variant="outline" asChild>
@@ -187,14 +182,10 @@ const PurchaseRequestDetailPage = () => {
             </CardContent>
           </Card>
         )}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold tracking-tight">{data.requestNumber}</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight">{data.requestNumber}</h1>
 
-              <StatusBadge label={data.status} variant={PurchaseStatus[data.status]} />
-            </div>
-          </div>
+          <StatusBadge label={FormatStatus(data.status)} variant={PurchaseStatus[data.status]} />
         </div>
       </div>
 

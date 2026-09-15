@@ -10,7 +10,7 @@ export async function getInventories(): Promise<Inventory[]> {
   return response.json();
 }
 
-export async function getInventoriesById(id: string): Promise<Inventory> {
+export async function getInventoriyById(id: string): Promise<Inventory> {
   const response = await fetch(`/api/inventory/${id}`);
   if (!response.ok) {
     throw new Error('Failed to load inventory');

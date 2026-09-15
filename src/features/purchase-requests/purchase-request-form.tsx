@@ -76,26 +76,6 @@ const PurchaseRequestForm = ({ onSubmit, isSubmitting = false, defaultValues }: 
               Warehouse
             </label>
 
-            {/* <Select
-              value={warehouseId}
-              onValueChange={(value) => {
-                setValue('warehouseId', value, {
-                  shouldValidate: true,
-                });
-              }}
-            >
-              <SelectTrigger id="warehouse">
-                <SelectValue placeholder="Select warehouse" />
-              </SelectTrigger>
-
-              <SelectContent>
-                {warehouses.map((warehouse) => (
-                  <SelectItem key={warehouse.id} value={warehouse.id}>
-                    {warehouse.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select> */}
             <Controller
               control={control}
               name="warehouseId"
@@ -131,7 +111,7 @@ const PurchaseRequestForm = ({ onSubmit, isSubmitting = false, defaultValues }: 
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base">Requested Items</CardTitle>
 
           <Button
@@ -202,7 +182,7 @@ const PurchaseRequestForm = ({ onSubmit, isSubmitting = false, defaultValues }: 
       </Card>
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
           {isSubmitting ? 'Saving...' : 'Save Draft'}
         </Button>
       </div>

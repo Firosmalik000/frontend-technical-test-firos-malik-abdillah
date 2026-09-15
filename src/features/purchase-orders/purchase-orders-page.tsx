@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 import { EmptyState, ErrorState, LoadingState, StatusBadge } from '@/components/common';
 
-import { FormatDate } from '@/lib/utils';
+import { FormatDate, FormatStatus } from '@/lib/utils';
 import { PurchaseOrderStatusVariant } from './status';
 
 export default function PurchaseOrdersPage() {
@@ -32,7 +32,6 @@ export default function PurchaseOrdersPage() {
   }
 
   const data = purchaseOrdersQuery.data;
-  console.log(data);
 
   if (data.length === 0) {
     return <EmptyState title="No purchase orders yet" description="Purchase orders will appear here." />;
@@ -56,11 +55,11 @@ export default function PurchaseOrdersPage() {
         <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search purchase orders..." className="pl-9" />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search purchase orders..." aria-label="Search purchase orders" className="pl-9" />
         </div>
 
         <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as PurchaseOrderStatus | 'All')}>
-          <SelectTrigger className="w-full sm:w-52">
+          <SelectTrigger className="w-full sm:w-52" aria-label="Filter by status">
             <SelectValue />
           </SelectTrigger>
 
@@ -80,6 +79,7 @@ export default function PurchaseOrdersPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>No</TableHead>
                 <TableHead>PO Number</TableHead>
                 <TableHead>Supplier</TableHead>
                 <TableHead>Warehouse</TableHead>
@@ -90,8 +90,10 @@ export default function PurchaseOrdersPage() {
             </TableHeader>
 
             <TableBody>
-              {filteredData.map((item) => (
+              {filteredData.map((item, index) => (
                 <TableRow key={item.id}>
+                  <TableCell>{index + 1}</TableCell>
+
                   <TableCell>
                     <Link to="/purchase-orders/$id" params={{ id: item.id }} className="font-medium text-[#043C86] hover:underline">
                       {item.poNumber}
@@ -105,7 +107,7 @@ export default function PurchaseOrdersPage() {
                   <TableCell>{item.items.length}</TableCell>
 
                   <TableCell>
-                    <StatusBadge label={item.status} variant={PurchaseOrderStatusVariant[item.status]} />
+                    <StatusBadge label={FormatStatus(item.status)} variant={PurchaseOrderStatusVariant[item.status]} />
                   </TableCell>
 
                   <TableCell>{FormatDate(item.createdAt)}</TableCell>

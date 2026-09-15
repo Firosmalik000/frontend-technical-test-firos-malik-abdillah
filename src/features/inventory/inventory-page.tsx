@@ -48,11 +48,11 @@ export default function InventoryPage() {
         <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory..." className="pl-9" />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inventory..." aria-label="Search inventory" className="pl-9" />
         </div>
 
         <Select value={warehouseFilter} onValueChange={setWarehouseFilter}>
-          <SelectTrigger className="w-full sm:w-52">
+          <SelectTrigger className="w-full sm:w-52" aria-label="Filter by status">
             <SelectValue />
           </SelectTrigger>
 
@@ -71,6 +71,7 @@ export default function InventoryPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>No</TableHead>
                 <TableHead>Product</TableHead>
                 <TableHead>SKU</TableHead>
                 <TableHead>Warehouse</TableHead>
@@ -81,8 +82,9 @@ export default function InventoryPage() {
 
             <TableBody>
               {filteredData.length > 0 ? (
-                filteredData.map((item) => (
+                filteredData.map((item, index) => (
                   <TableRow key={item.id}>
+                    <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">{item.productName}</TableCell>
 
                     <TableCell>{item.sku}</TableCell>

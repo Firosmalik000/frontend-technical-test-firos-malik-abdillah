@@ -6,6 +6,7 @@ import { updatePurchaseRequest } from '@/api/purchase-requests';
 import { ErrorState, LoadingState } from '@/components/common';
 
 import PurchaseRequestForm from './purchase-request-form';
+import type { PurchaseRequestFormValues } from './purchase-request-form-schema';
 import { purchaseRequestQueries } from './queries';
 
 export default function EditPurchaseRequestPage() {
@@ -19,7 +20,7 @@ export default function EditPurchaseRequestPage() {
   const purchaseRequestQuery = useQuery(purchaseRequestQueries.detail(id));
 
   const updateMutation = useMutation({
-    mutationFn: (values) => updatePurchaseRequest(id, values),
+    mutationFn: (values: PurchaseRequestFormValues) => updatePurchaseRequest(id, values),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

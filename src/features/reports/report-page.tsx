@@ -2,6 +2,8 @@ import { getInventories } from '@/api/inventory';
 import { getPurchaseOrders } from '@/api/purchase-order';
 import { getPurchaseRequests } from '@/api/purchase-requests';
 import { ErrorState, LoadingState } from '@/components/common';
+import ReportCard from '@/components/common/report-card';
+import StatusRow from '@/components/common/status-row';
 import { useQuery } from '@tanstack/react-query';
 import { Boxes, ClipboardCheck, ClipboardList, PackageCheck } from 'lucide-react';
 
@@ -97,33 +99,6 @@ const ReportPage = () => {
 
 export default ReportPage;
 
-type ReportCardProps = {
-  title: string;
-  value: number;
-  description: string;
-  icon: React.ElementType;
-};
-
-function ReportCard({ title, value, description, icon: Icon }: ReportCardProps) {
-  return (
-    <div className="rounded-lg border bg-white p-5">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{title}</p>
-
-          <p className="mt-2 text-2xl font-semibold">{value}</p>
-        </div>
-
-        <div className="rounded-md bg-[#043C86]/10 p-2">
-          <Icon className="size-5 text-[#043C86]" />
-        </div>
-      </div>
-
-      <p className="mt-3 text-xs text-muted-foreground">{description}</p>
-    </div>
-  );
-}
-
 function ReportSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-lg border bg-white">
@@ -132,16 +107,6 @@ function ReportSection({ title, children }: { title: string; children: React.Rea
       </div>
 
       <div className="divide-y px-5">{children}</div>
-    </div>
-  );
-}
-
-function StatusRow({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="flex items-center justify-between py-3 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-
-      <span className="font-medium">{value}</span>
     </div>
   );
 }

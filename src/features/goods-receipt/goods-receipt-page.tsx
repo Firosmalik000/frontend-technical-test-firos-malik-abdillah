@@ -28,12 +28,6 @@ export function GoodsReceiptsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Goods Receipt</h1>
-
-        <p className="mt-1 text-sm text-muted-foreground">Purchase Order yang masih memiliki barang untuk diterima.</p>
-      </div>
-
       {dataFiltered.length === 0 ? (
         <EmptyState title="Tidak ada barang yang perlu diterima" description="Semua Purchase Order telah selesai diterima." />
       ) : (

@@ -42,8 +42,6 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Inventory</h1>
-
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />

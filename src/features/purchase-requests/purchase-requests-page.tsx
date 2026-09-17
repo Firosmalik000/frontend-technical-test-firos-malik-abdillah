@@ -53,9 +53,8 @@ export function PurchaseRequestsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Purchase Requests</h1>
+    <div className=" space-y-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
         {role.role === 'USER' && (
           <Button asChild>
             <Link to="/purchase-requests/new">Create</Link>
@@ -84,7 +83,7 @@ export function PurchaseRequestsPage() {
         </Select>
       </div>
       {/* table */}
-      <div className="overflow-hidden rounded-lg border bg-white">
+      <div className="overflow-hidden rounded-lg border border-[#E6ECF3] bg-white">
         <div className="overflow-x-auto">
           <Table className="w-full ">
             <TableHeader>

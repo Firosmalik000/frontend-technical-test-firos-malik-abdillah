@@ -54,12 +54,6 @@ const ReportPage = () => {
   const receivedOrder = dataOrder.filter((item) => item.status === 'RECEIVED');
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Reports</h1>
-
-        <p className="mt-1 text-sm text-muted-foreground">Ringkasan aktivitas procurement dan inventory.</p>
-      </div>
-
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <ReportCard title="Purchase Requests" value={dataRequest.length} description={`${submittedRequest.length} menunggu approval`} icon={ClipboardList} />
 

@@ -110,16 +110,6 @@ export function DashboardPage() {
     <div className="space-y-5">
       {/* PAGE HEADER */}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-medium text-foreground">Dashboard</p>
-
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span>Procurement System</span>
-
-          <div className="rounded-md border bg-white px-3 py-1.5 text-foreground">Manager</div>
-        </div>
-      </div>
-
       {/* TITLE + ACTION*/}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

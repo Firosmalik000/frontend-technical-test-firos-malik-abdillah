@@ -1,325 +1,85 @@
 # ProcureFlow
 
-ProcureFlow adalah aplikasi frontend untuk alur pengadaan barang yang dibuat sebagai bagian dari technical test frontend.
+ProcureFlow adalah aplikasi frontend untuk mensimulasikan alur pengadaan barang yang dibuat sebagai bagian dari technical test Frontend Developer.
 
-Aplikasi ini mensimulasikan alur utama pengadaan:
+Aplikasi mengimplementasikan alur procurement utama:
 
 **Purchase Request → Approval → Purchase Order → Goods Receipt → Inventory Update**
 
-Fokus utama project ini adalah alur pengguna yang jelas, pembagian aksi berdasarkan role, pengelolaan server state, validasi form, tampilan responsif, mock API, serta automated testing.
+Project berfokus pada business flow yang saling terhubung, role-based action, server state management, form validation, mock REST API, responsive UI, visual consistency berdasarkan referensi Figma, serta automated testing untuk behavior penting.
+
+---
+
+## Business Flow
+
+Alur utama aplikasi:
+
+```text
+Purchase Request
+      ↓
+    Submit
+      ↓
+   Approval
+   ↙      ↘
+Reject   Approve
+           ↓
+    Purchase Order
+           ↓
+     Goods Receipt
+           ↓
+       Inventory
+```
+
+Ketika Purchase Request disetujui, aplikasi otomatis membuat Purchase Order berdasarkan data Purchase Request tersebut.
+
+Goods Receipt kemudian memperbarui Purchase Order dan stok Inventory pada warehouse yang sesuai.
 
 ---
 
 ## Fitur Utama
+
+### Dashboard
+
+Dashboard menampilkan ringkasan data procurement yang berasal dari data aplikasi yang sama.
+
+Informasi yang ditampilkan antara lain:
+
+- total Purchase Request;
+- Purchase Request yang masih membutuhkan proses;
+- Purchase Order aktif;
+- Purchase Order yang partially received;
+- recent Purchase Requests;
+- recent procurement activity.
+
+Dashboard tidak menggunakan dataset terpisah, tetapi dihitung dari data Purchase Request, Purchase Order, dan Inventory yang tersedia melalui API layer.
+
+---
 
 ### Purchase Request
 
 Fitur yang tersedia:
 
 - melihat daftar Purchase Request;
-- melakukan pencarian dan filter;
+- melakukan pencarian;
+- melakukan filter berdasarkan status;
 - melihat detail Purchase Request;
 - membuat Purchase Request baru;
 - mengedit Purchase Request yang masih berstatus `DRAFT`;
 - melakukan submit Purchase Request;
 - melakukan approve pada Purchase Request berstatus `SUBMITTED`;
 - melakukan reject pada Purchase Request berstatus `SUBMITTED`;
-- menyimpan alasan penolakan atau rejection reason.
+- menyimpan alasan penolakan atau `rejectionReason`.
 
 Status Purchase Request:
 
-- `DRAFT`
-- `SUBMITTED`
-- `APPROVED`
-- `REJECTED`
-
----
-
-### Purchase Order
-
-Fitur yang tersedia:
-
-- melihat daftar Purchase Order;
-- melakukan pencarian dan filter;
-- melihat detail Purchase Order;
-- mencatat Goods Receipt;
-- menerima barang secara sebagian atau partial receipt;
-- memperbarui status Purchase Order sesuai jumlah barang yang diterima.
-
-Status Purchase Order:
-
-- `DRAFT`
-- `ORDERED`
-- `PARTIALLY_RECEIVED`
-- `RECEIVED`
-- `CANCELLED`
-
----
-
-### Inventory
-
-Fitur yang tersedia:
-
-- melihat stok inventory saat ini;
-- melakukan pencarian berdasarkan nama produk atau SKU;
-- melakukan filter berdasarkan warehouse;
-- memperbarui stok secara otomatis setelah Goods Receipt berhasil dilakukan.
-
----
-
-## Role Pengguna
-
-Aplikasi memiliki dua role yang disimulasikan di frontend.
-
-### USER
-
-USER dapat:
-
-- membuat Purchase Request;
-- mengedit Purchase Request berstatus `DRAFT`;
-- melakukan submit Purchase Request;
-- melihat Purchase Order;
-- mencatat Goods Receipt;
-- melihat Inventory.
-
-### APPROVER
-
-APPROVER dapat:
-
-- melihat daftar dan detail Purchase Request;
-- melakukan approve pada Purchase Request berstatus `SUBMITTED`;
-- melakukan reject pada Purchase Request berstatus `SUBMITTED`;
-- memberikan rejection reason saat melakukan reject.
-
-Authentication tidak menjadi bagian dari scope technical test ini, sehingga role disimulasikan menggunakan role switcher di frontend dan disimpan melalui browser storage.
-
----
-
-## Tech Stack
-
-Project ini menggunakan:
-
-- React
-- TypeScript
-- Vite
-- TanStack Router
-- TanStack Query
-- React Hook Form
-- Zod
-- Tailwind CSS
-- shadcn/ui
-- MSW (Mock Service Worker)
-- Vitest
-- React Testing Library
-
----
-
-## Struktur Project
-
 ```text
-src/
-├── api/
-│   └── fungsi untuk berkomunikasi dengan API
-│
-├── components/
-│   ├── common/
-│   ├── layout/
-│   └── ui/
-│
-├── features/
-│   ├── purchase-requests/
-│   ├── purchase-orders/
-│   └── inventory/
-│
-├── mocks/
-│   ├── data/
-│   └── handlers/
-│
-├── routes/
-│
-├── test/
-│
-└── types/
+DRAFT
+SUBMITTED
+APPROVED
+REJECTED
 ```
 
-Struktur ini memisahkan tampilan, feature logic, API access, mock API, dan type agar project lebih mudah dibaca dan dikembangkan.
-
----
-
-## Instalasi
-
-### Kebutuhan
-
-Pastikan sudah tersedia:
-
-- Node.js
-- npm
-
-### Install Dependency
-
-```bash
-npm install
-```
-
-### Menjalankan Development Server
-
-```bash
-npm run dev
-```
-
-Buka URL lokal yang diberikan oleh Vite di terminal.
-
-Project ini tidak membutuhkan environment variable khusus karena API yang digunakan masih berupa mock API dengan MSW.
-
----
-
-## Build Production
-
-Untuk membuat production build:
-
-```bash
-npm run build
-```
-
-Build harus berhasil tanpa TypeScript error sebelum project dianggap siap untuk dikirim.
-
----
-
-## Lint
-
-Untuk menjalankan ESLint:
-
-```bash
-npm run lint
-```
-
----
-
-## Testing
-
-Untuk menjalankan automated test:
-
-```bash
-npm run test
-```
-
-Project menggunakan **Vitest** untuk menjalankan test.
-
-Test yang tersedia mencakup behavior penting seperti:
-
-- validasi form Purchase Request;
-- approval flow Purchase Request;
-- rejection flow Purchase Request;
-- validasi rejection reason;
-- integrasi Goods Receipt dengan perubahan stok Inventory;
-- perubahan received quantity pada Purchase Order setelah Goods Receipt.
-
-Test dibuat untuk memeriksa business behavior yang penting, bukan hanya mengecek apakah component berhasil dirender.
-
----
-
-## Strategi Mock API
-
-Aplikasi menggunakan **MSW (Mock Service Worker)** sebagai mock API layer.
-
-Frontend tidak mengambil data mock langsung dari file data. Component tetap berkomunikasi melalui API abstraction yang berada di:
-
-```text
-src/api
-```
-
-Contoh request yang digunakan aplikasi:
-
-```text
-GET  /api/purchase-requests
-POST /api/purchase-requests/:id/submit
-POST /api/purchase-requests/:id/approve
-POST /api/purchase-requests/:id/reject
-GET  /api/purchase-orders
-POST /api/purchase-orders/:id/receipt
-GET  /api/inventory
-```
-
-MSW menangkap request tersebut dan menjalankan handler yang berada di:
-
-```text
-src/mocks/handlers
-```
-
-Sedangkan data awal mock disimpan di:
-
-```text
-src/mocks/data
-```
-
-Pendekatan ini membuat frontend tetap menggunakan pola request HTTP seperti saat menggunakan backend sungguhan.
-
-Mock data disimpan di memory selama aplikasi berjalan. Karena itu, perubahan data akan tetap terlihat selama session berjalan, tetapi akan kembali ke seeded data saat browser direfresh.
-
----
-
-## Server State dengan TanStack Query
-
-TanStack Query digunakan untuk mengelola server state.
-
-Secara sederhana:
-
-```text
-useQuery
-= membaca data
-
-queryKey
-= identitas data di cache
-
-queryFn
-= fungsi yang mengambil data
-
-useMutation
-= mengubah data
-
-queryClient
-= pengelola cache TanStack Query
-
-invalidateQueries
-= menandai cache sebagai stale agar data dapat diambil ulang
-```
-
-Contoh pada Inventory:
-
-```ts
-useQuery({
-  queryKey: ['inventory'],
-  queryFn: getInventories,
-});
-```
-
-Artinya:
-
-- `queryKey` memberi nama data cache yaitu `inventory`;
-- `queryFn` menentukan fungsi yang digunakan untuk mengambil data inventory.
-
-Setelah mutation mengubah data, cache yang terkait dapat di-invalidate.
-
-Contoh setelah Goods Receipt:
-
-```text
-Goods Receipt berhasil
-        ↓
-Purchase Order berubah
-        ↓
-Inventory berubah
-        ↓
-invalidate Purchase Order query
-invalidate Inventory query
-        ↓
-UI mendapatkan data terbaru
-```
-
----
-
-## Alur Purchase Request
-
-Alur normal:
+Flow normal:
 
 ```text
 DRAFT
@@ -329,7 +89,7 @@ SUBMITTED
 APPROVED
 ```
 
-Atau jika ditolak:
+Flow rejection:
 
 ```text
 DRAFT
@@ -341,13 +101,76 @@ REJECTED
 
 Purchase Request hanya dapat diedit ketika masih berstatus `DRAFT`.
 
-Approval dan rejection hanya dapat dilakukan pada Purchase Request berstatus `SUBMITTED`.
+Approve dan Reject hanya dapat dilakukan ketika Purchase Request berstatus `SUBMITTED`.
 
 ---
 
-## Alur Goods Receipt
+### Purchase Order
 
-Goods Receipt dapat dilakukan oleh USER ketika Purchase Order memiliki status:
+Purchase Order terhubung langsung dengan Purchase Request.
+
+Ketika Purchase Request berstatus `SUBMITTED` disetujui oleh APPROVER:
+
+```text
+Purchase Request
+SUBMITTED
+    ↓
+APPROVED
+    ↓
+Purchase Order dibuat
+    ↓
+ORDERED
+```
+
+Purchase Order menyimpan referensi:
+
+```text
+purchaseRequestId
+```
+
+sehingga hubungan antara Purchase Request dan Purchase Order tetap dapat dilacak.
+
+Fitur yang tersedia:
+
+- melihat daftar Purchase Order;
+- melakukan pencarian dan filter;
+- melihat detail Purchase Order;
+- melihat Purchase Request asal;
+- melihat ordered quantity;
+- melihat received quantity;
+- mencatat Goods Receipt;
+- menerima barang secara sebagian;
+- memperbarui status Purchase Order berdasarkan quantity yang diterima.
+
+Status Purchase Order:
+
+```text
+DRAFT
+ORDERED
+PARTIALLY_RECEIVED
+RECEIVED
+CANCELLED
+```
+
+Purchase Order hasil approval dibuat dengan status awal:
+
+```text
+ORDERED
+```
+
+dan:
+
+```text
+receivedQuantity = 0
+```
+
+---
+
+### Goods Receipt
+
+Goods Receipt tersedia sebagai menu tersendiri untuk memudahkan USER melihat Purchase Order yang masih dapat menerima barang.
+
+Purchase Order yang dapat diproses adalah:
 
 ```text
 ORDERED
@@ -374,16 +197,667 @@ Receive Qty <= Remaining Qty
 Setelah Goods Receipt berhasil:
 
 ```text
+Purchase Order
+      ↓
+receivedQuantity bertambah
+      ↓
+status PO diperbarui
+      ↓
+Inventory bertambah
+```
+
+Contoh partial receipt:
+
+```text
 ORDERED
    ↓
 PARTIALLY_RECEIVED
-   ↓
-RECEIVED
 ```
 
-Jika seluruh ordered quantity sudah diterima, status Purchase Order menjadi `RECEIVED`.
+Ketika seluruh ordered quantity sudah diterima:
 
-Inventory pada warehouse yang sesuai juga akan bertambah berdasarkan quantity yang diterima.
+```text
+PARTIALLY_RECEIVED
+        ↓
+     RECEIVED
+```
+
+---
+
+### Inventory
+
+Inventory bersifat warehouse-specific.
+
+Inventory dicocokkan berdasarkan kombinasi:
+
+```text
+productId + warehouseId
+```
+
+Fitur yang tersedia:
+
+- melihat stok Inventory saat ini;
+- melakukan pencarian berdasarkan nama produk atau SKU;
+- melakukan filter berdasarkan warehouse;
+- melihat unit produk;
+- memperbarui stok secara otomatis setelah Goods Receipt berhasil.
+
+Inventory tidak berubah ketika:
+
+```text
+Purchase Request dibuat
+Purchase Request disubmit
+Purchase Request diapprove
+```
+
+Inventory hanya berubah ketika:
+
+```text
+Goods Receipt berhasil
+```
+
+---
+
+### Reports
+
+Reports menyediakan ringkasan procurement berdasarkan data aplikasi yang sama.
+
+Data Reports dihitung dari:
+
+- Purchase Request;
+- Purchase Order;
+- Inventory.
+
+Reports tidak menggunakan dataset report terpisah.
+
+Pendekatan ini memastikan perubahan pada business data juga tercermin pada laporan setelah query terkait diperbarui.
+
+---
+
+## Role Pengguna
+
+Aplikasi memiliki dua role yang disimulasikan di frontend.
+
+### USER
+
+USER dapat:
+
+- membuka Dashboard;
+- membuat Purchase Request;
+- mengedit Purchase Request berstatus `DRAFT`;
+- melakukan submit Purchase Request;
+- melihat Purchase Request;
+- melihat Purchase Order;
+- mencatat Goods Receipt;
+- melihat Inventory;
+- melihat Reports.
+
+### APPROVER
+
+APPROVER difokuskan pada proses approval Purchase Request.
+
+APPROVER dapat:
+
+- melihat daftar Purchase Request;
+- melihat detail Purchase Request;
+- melakukan approve pada Purchase Request berstatus `SUBMITTED`;
+- melakukan reject pada Purchase Request berstatus `SUBMITTED`;
+- memberikan rejection reason.
+
+Authentication tidak termasuk dalam scope technical test.
+
+Karena itu, role disimulasikan menggunakan role switcher di frontend.
+
+Role disimpan menggunakan browser storage dan dikelola melalui React Context sehingga perubahan role tidak membutuhkan full page reload.
+
+---
+
+## Master Data
+
+Project memiliki beberapa master data statis:
+
+```text
+Products
+Warehouses
+Suppliers
+```
+
+Master data digunakan sebagai referensi ketika membuat Purchase Request dan Purchase Order.
+
+CRUD master data tidak diimplementasikan karena berada di luar scope technical test.
+
+---
+
+## Centralized Mock Data
+
+Seluruh mock data dipusatkan pada satu mock data source.
+
+Secara konsep:
+
+```text
+db
+├── products
+├── warehouses
+├── suppliers
+├── purchaseRequests
+├── purchaseOrders
+└── inventories
+```
+
+Pendekatan ini digunakan agar Purchase Request, Purchase Order, Goods Receipt, dan Inventory menggunakan sumber data yang konsisten.
+
+Relasi antar resource menggunakan identifier seperti:
+
+```text
+productId
+warehouseId
+purchaseRequestId
+```
+
+---
+
+## Tech Stack
+
+Project menggunakan:
+
+- React
+- TypeScript
+- Vite
+- TanStack Router
+- TanStack Query
+- React Hook Form
+- Zod
+- Tailwind CSS
+- shadcn/ui
+- Lucide React
+- MSW
+- Vitest
+- React Testing Library
+
+---
+
+## Struktur Project
+
+```text
+src/
+├── api/
+│   └── API abstraction
+│
+├── components/
+│   ├── common/
+│   ├── layout/
+│   └── ui/
+│
+├── context/
+│   └── role context
+│
+├── features/
+│   ├── dashboard/
+│   ├── purchase-requests/
+│   ├── purchase-orders/
+│   ├── goods-receipts/
+│   ├── inventory/
+│   └── reports/
+│
+├── lib/
+│   └── utility dan role helper
+│
+├── mocks/
+│   ├── data.ts
+│   └── handlers/
+│
+├── routes/
+├── test/
+└── types/
+```
+
+Struktur project memisahkan UI component, feature logic, API access, mock API, server state, role state, type, dan routing agar project lebih mudah dibaca dan dikembangkan.
+
+---
+
+## Instalasi
+
+### Kebutuhan
+
+Pastikan tersedia:
+
+- Node.js
+- npm
+
+### Install Dependency
+
+```bash
+npm install
+```
+
+### Menjalankan Development Server
+
+```bash
+npm run dev
+```
+
+Buka URL lokal yang diberikan oleh Vite di terminal.
+
+Project tidak membutuhkan environment variable khusus karena backend masih disimulasikan menggunakan MSW.
+
+---
+
+## Build Production
+
+```bash
+npm run build
+```
+
+Production build sebaiknya berhasil tanpa TypeScript error sebelum submission.
+
+---
+
+## Lint
+
+```bash
+npm run lint
+```
+
+---
+
+## Testing
+
+```bash
+npm run test
+```
+
+Project menggunakan Vitest dan React Testing Library.
+
+Testing difokuskan pada behavior penting seperti:
+
+- validasi Purchase Request;
+- approval flow;
+- rejection flow;
+- validasi rejection reason;
+- Goods Receipt;
+- perubahan received quantity;
+- perubahan status Purchase Order;
+- integrasi Goods Receipt dengan Inventory.
+
+Testing tidak hanya memeriksa apakah component dapat dirender, tetapi juga behavior bisnis yang penting.
+
+---
+
+## Mock API
+
+Aplikasi menggunakan **MSW (Mock Service Worker)** sebagai mock API layer.
+
+React component tidak mengambil mock data langsung dari `data.ts`.
+
+Component tetap berkomunikasi melalui API abstraction:
+
+```text
+src/api/
+```
+
+Alurnya:
+
+```text
+React Component
+      ↓
+API Function
+      ↓
+HTTP Request
+      ↓
+MSW Handler
+      ↓
+Centralized Mock DB
+```
+
+Contoh endpoint:
+
+```text
+GET   /api/purchase-requests
+POST  /api/purchase-requests
+PATCH /api/purchase-requests/:id
+PATCH /api/purchase-requests/:id/submit
+PATCH /api/purchase-requests/:id/approve
+PATCH /api/purchase-requests/:id/reject
+
+GET   /api/purchase-orders
+GET   /api/purchase-orders/:id
+POST  /api/purchase-orders/:id/receipt
+
+GET   /api/inventory
+```
+
+MSW handler berada di:
+
+```text
+src/mocks/handlers/
+```
+
+Centralized mock data berada di:
+
+```text
+src/mocks/data.ts
+```
+
+Pendekatan ini membuat frontend tetap menggunakan pola komunikasi HTTP seperti saat menggunakan backend sebenarnya.
+
+---
+
+## Persistence Mock Data
+
+Mock database berjalan di memory selama aplikasi aktif.
+
+Perubahan seperti:
+
+```text
+Create PR
+Submit PR
+Approve PR
+Create PO
+Goods Receipt
+Inventory Update
+```
+
+akan tetap terlihat selama aplikasi tidak melakukan full refresh.
+
+Jika browser direfresh, mock database kembali menggunakan seeded data awal.
+
+---
+
+## Server State dengan TanStack Query
+
+TanStack Query digunakan untuk mengelola server state.
+
+Konsep utama:
+
+```text
+useQuery
+= membaca server state
+
+queryKey
+= identitas data dalam cache
+
+queryFn
+= fungsi pengambil data
+
+useMutation
+= melakukan perubahan data
+
+queryClient
+= mengelola query cache
+
+invalidateQueries
+= menandai query sebagai stale agar data diperbarui
+```
+
+Contoh:
+
+```ts
+useQuery({
+  queryKey: ['inventory'],
+  queryFn: getInventories,
+});
+```
+
+Setelah Goods Receipt:
+
+```text
+Goods Receipt berhasil
+        ↓
+Purchase Order berubah
+        ↓
+Inventory berubah
+        ↓
+invalidate Purchase Order
+invalidate Inventory
+        ↓
+UI diperbarui
+```
+
+Setelah Purchase Request diapprove:
+
+```text
+Purchase Request
+SUBMITTED
+    ↓
+APPROVED
+    ↓
+Purchase Order dibuat
+    ↓
+invalidate Purchase Requests
+invalidate Purchase Orders
+    ↓
+UI diperbarui
+```
+
+---
+
+## Sinkronisasi Purchase Request dan Purchase Order
+
+Purchase Request dan Purchase Order saling terhubung melalui business flow.
+
+Saat Purchase Request dibuat:
+
+```text
+Create PR
+   ↓
+DRAFT
+```
+
+Belum ada Purchase Order.
+
+Setelah submit:
+
+```text
+DRAFT
+  ↓
+SUBMITTED
+```
+
+Purchase Order juga belum dibuat.
+
+Ketika APPROVER melakukan approve:
+
+```text
+SUBMITTED
+    ↓
+APPROVED
+    ↓
+Purchase Order dibuat
+    ↓
+ORDERED
+```
+
+Purchase Order mengambil informasi seperti:
+
+- `purchaseRequestId`;
+- warehouse;
+- item;
+- ordered quantity;
+- unit;
+- supplier mock.
+
+Satu Purchase Request yang telah diapprove hanya menghasilkan satu Purchase Order.
+
+---
+
+## API Abstraction
+
+Request HTTP dipisahkan dari React component dan ditempatkan pada:
+
+```text
+src/api/
+```
+
+Tujuannya agar React component fokus pada UI dan interaksi pengguna, sedangkan komunikasi HTTP ditangani oleh API layer.
+
+Jika MSW diganti dengan backend sebenarnya, perubahan utama dapat dilakukan pada API layer tanpa harus mengubah seluruh component.
+
+---
+
+## React Hook Form dan Zod
+
+React Hook Form digunakan untuk mengelola form state.
+
+Zod digunakan untuk schema validation.
+
+Kombinasi ini membuat:
+
+- validation rule lebih terpusat;
+- form lebih mudah dibaca;
+- schema dapat diuji secara terpisah;
+- error validation lebih konsisten.
+
+---
+
+## UI dan Design System
+
+UI mengacu pada referensi Figma yang diberikan pada technical test.
+
+Figma digunakan sebagai acuan untuk:
+
+- typography;
+- font;
+- color palette;
+- spacing;
+- sidebar;
+- header;
+- dashboard;
+- visual hierarchy.
+
+Font utama:
+
+```text
+Instrument Sans
+```
+
+Palette utama menggunakan neutral surface dengan blue sebagai brand/action color.
+
+```text
+Background      #F9FAFB
+Card            #FFFFFF
+Muted Surface   #F0F3F6
+Border          #E6ECF3
+
+Primary Text    #1D242D
+Muted Text      #546881
+
+Primary         #043C86
+Primary Hover   #043679
+Primary Active  #03306B
+```
+
+Warna biru digunakan terutama untuk:
+
+- primary action;
+- active state;
+- links;
+- focus state;
+- navigation emphasis.
+
+Sebagian besar surface menggunakan putih dan abu-abu agar sesuai dengan visual language Figma.
+
+---
+
+## Sidebar dan Navigation
+
+Sidebar menyediakan menu:
+
+```text
+MAIN
+├── Dashboard
+├── Purchase Requests
+├── Purchase Orders
+└── Inventory
+
+EXTENSIONS
+├── Goods Receipt
+└── Reports
+```
+
+Sidebar juga memiliki:
+
+- navigation search;
+- Purchase Request indicator;
+- Settings sebagai visual item;
+- user information.
+
+Menu menyesuaikan berdasarkan role.
+
+APPROVER difokuskan pada section Purchase Request.
+
+---
+
+## Header
+
+Header menampilkan nama section berdasarkan route aktif.
+
+Contoh:
+
+```text
+/                       → Dashboard
+/purchase-requests      → Purchase Requests
+/purchase-orders        → Purchase Orders
+/inventory              → Inventory
+/goods-receipts         → Goods Receipt
+/reports                → Reports
+```
+
+Route detail tetap menggunakan nama section induknya.
+
+Contoh:
+
+```text
+/purchase-requests/pr-001
+→ Purchase Requests
+```
+
+Header juga menyediakan role switcher untuk berpindah antara USER dan APPROVER.
+
+---
+
+## UI State
+
+Aplikasi menangani state asynchronous penting:
+
+- Loading
+- Empty
+- Error
+- Pending / Submitting
+- Success melalui refresh data setelah mutation
+
+Action ditampilkan berdasarkan role dan status data.
+
+```text
+USER + DRAFT
+→ Edit
+→ Submit
+
+APPROVER + SUBMITTED
+→ Approve
+→ Reject
+
+ORDERED / PARTIALLY_RECEIVED
+→ Goods Receipt
+```
+
+---
+
+## Responsive Design
+
+Aplikasi dirancang untuk digunakan pada:
+
+- mobile;
+- tablet;
+- desktop.
+
+Beberapa penyesuaian responsive:
+
+- sidebar compact pada layar kecil;
+- responsive header;
+- horizontal scroll untuk table;
+- responsive form;
+- responsive action;
+- adaptive spacing.
 
 ---
 
@@ -391,138 +865,108 @@ Inventory pada warehouse yang sesuai juga akan bertambah berdasarkan quantity ya
 
 ### TanStack Query untuk Server State
 
-TanStack Query digunakan karena aplikasi memiliki beberapa resource API yang saling berhubungan seperti Purchase Request, Purchase Order, dan Inventory.
+TanStack Query digunakan karena Purchase Request, Purchase Order, Goods Receipt, Inventory, Dashboard, dan Reports memiliki data yang saling berhubungan.
 
-TanStack Query membantu menangani:
+TanStack Query digunakan untuk:
 
 - loading state;
 - error state;
 - mutation;
-- cache;
-- invalidasi cache;
-- refetch data setelah terjadi perubahan.
+- caching;
+- invalidation;
+- refetch;
+- sinkronisasi UI setelah perubahan data.
 
----
+### Centralized Mock Database
 
-### API Abstraction
+Mock data dipusatkan agar setiap feature menggunakan entity yang sama dan tidak memiliki data yang saling bertentangan.
 
-Request HTTP dipisahkan dari React component dan ditempatkan di `src/api`.
+### Automatic Purchase Order Generation
 
-Tujuannya agar component fokus pada UI dan interaksi pengguna, sedangkan komunikasi dengan API ditangani oleh layer tersendiri.
+Purchase Order otomatis dibuat setelah Purchase Request diapprove.
 
-Jika nanti mock API diganti dengan backend sungguhan, perubahan utama dapat dilakukan pada API layer tanpa harus mengubah banyak component.
+Flow utama menjadi:
 
----
+```text
+PR
+↓
+Approval
+↓
+PO
+↓
+Goods Receipt
+↓
+Inventory
+```
 
-### MSW sebagai Mock API
+Supplier menggunakan static master data karena supplier management tidak termasuk scope.
 
-MSW digunakan agar aplikasi tetap berkomunikasi melalui request HTTP normal.
+### Reports Derived dari Existing Data
 
-Mock data tidak di-import langsung ke dalam component.
+Reports dihitung dari data Purchase Request, Purchase Order, dan Inventory.
 
-Pendekatan ini lebih mendekati pola aplikasi production yang menggunakan REST API.
+Reports tidak menggunakan dataset terpisah.
 
----
+### Role Simulation
 
-### React Hook Form dan Zod
+Authentication dan backend authorization tidak termasuk scope.
 
-React Hook Form digunakan untuk mengelola form state.
+USER dan APPROVER disimulasikan melalui frontend role context.
 
-Zod digunakan untuk schema validation.
-
-Kombinasi ini membuat validation rule lebih terpusat, mudah dibaca, dan dapat digunakan kembali pada testing.
-
----
-
-### Simulasi Role
-
-Authentication tidak termasuk dalam requirement technical test.
-
-Karena itu, USER dan APPROVER disimulasikan di frontend tanpa login system.
+Role disimpan di browser storage dan React Context menjaga UI tetap reactive tanpa full page reload.
 
 ---
 
 ## Asumsi Implementasi
 
-### Purchase Order Tidak Dibuat Otomatis Setelah Approval
+### Master Data Bersifat Statis
 
-Purchase Order menggunakan seeded mock data.
+Product, Warehouse, dan Supplier merupakan static mock master data.
 
-Approved Purchase Request tidak otomatis membuat Purchase Order baru.
+CRUD master data berada di luar scope technical test.
 
-Alasannya, pembentukan Purchase Order secara lengkap biasanya membutuhkan informasi tambahan seperti supplier atau vendor, sementara data tersebut tidak tersedia pada flow Purchase Request yang diberikan dalam technical test.
+### Inventory Warehouse-Specific
 
-Karena itu, automatic Purchase Order generation dianggap di luar minimum scope.
+Inventory dicocokkan menggunakan:
 
----
+```text
+productId + warehouseId
+```
 
-### Inventory Bersifat Warehouse-Specific
+Goods Receipt hanya memengaruhi Inventory pada warehouse dan product yang sesuai.
 
-Inventory dicocokkan berdasarkan:
+### Purchase Order Dibuat Saat Approval
 
-- `productId`;
-- `warehouseId`.
+Purchase Order tidak dibuat ketika:
 
-Saat Goods Receipt dilakukan, stock hanya bertambah pada product dan warehouse yang sesuai dengan Purchase Order.
+```text
+Create PR
+Submit PR
+```
 
----
+Purchase Order baru dibuat ketika:
+
+```text
+Approve PR
+```
 
 ### Mock Data Tidak Persisten
 
-Mock data hanya disimpan di memory.
+Mock database berjalan di memory.
 
-Jika browser direfresh, data akan kembali ke seeded data awal.
+Browser refresh mengembalikan data ke seeded state.
 
-Hal ini sesuai dengan kebutuhan mock API untuk technical test dan bukan pengganti database sebenarnya.
+### Pagination
 
----
+Pagination tidak diimplementasikan karena bukan bagian utama requirement technical test.
 
-### Validasi Goods Receipt
-
-Receive quantity harus:
-
-- lebih besar dari `0`;
-- tidak lebih besar dari remaining quantity.
-
-Validasi dilakukan sebelum data Purchase Order dan Inventory diubah.
-
----
-
-## UI State
-
-Aplikasi menangani state penting pada proses asynchronous:
-
-- Loading
-- Empty
-- Error
-- Submitting
-- Success
-
-Aksi juga ditampilkan berdasarkan role pengguna dan status data saat ini.
-
-Contohnya:
-
-- Edit hanya tersedia untuk Purchase Request `DRAFT`;
-- Approve dan Reject hanya tersedia untuk `SUBMITTED`;
-- Goods Receipt hanya tersedia untuk `ORDERED` dan `PARTIALLY_RECEIVED`.
-
----
-
-## Responsive Design
-
-Aplikasi dirancang agar tetap dapat digunakan pada:
-
-- mobile;
-- tablet;
-- desktop.
-
-Table menggunakan horizontal scroll pada layar kecil, sementara sidebar, header, form action, dan tombol menyesuaikan ukuran layar.
+Table tetap menyediakan pencarian, filtering, responsive horizontal scrolling, dan UI state yang relevan.
 
 ---
 
 ## Final Quality Check
 
-Sebelum project dikirim, jalankan:
+Sebelum submission jalankan:
 
 ```bash
 npm run test
@@ -530,29 +974,63 @@ npm run lint
 npm run build
 ```
 
-Semua command harus berhasil tanpa error.
-
-Setelah itu lakukan pengecekan flow utama secara manual:
+Kemudian lakukan manual regression test:
 
 ```text
 USER
+
 Create Purchase Request
         ↓
-Save Draft
+DRAFT
         ↓
 Edit
         ↓
 Submit
         ↓
+SUBMITTED
+
 APPROVER
-Approve / Reject
+
+Open Purchase Request
         ↓
+Approve
+    atau
+Reject + Reason
+        ↓
+
+Jika Approved
+
+Purchase Order Created
+        ↓
+ORDERED
+
 USER
-Purchase Order
+
+Open Purchase Order
         ↓
 Goods Receipt
         ↓
+PARTIALLY_RECEIVED
+        ↓
+Goods Receipt Remaining Qty
+        ↓
+RECEIVED
+        ↓
 Inventory Updated
+```
+
+Periksa juga:
+
+```text
+Dashboard
+Reports
+Search
+Filter
+Role Switch
+Responsive Layout
+Loading State
+Empty State
+Error State
 ```
 
 ---
@@ -561,19 +1039,41 @@ Inventory Updated
 
 Beberapa pengembangan yang dapat dilakukan di luar scope technical test:
 
-- authentication dan authorization sungguhan;
-- backend dan database persisten;
-- automatic Purchase Order generation;
+- authentication dan authorization sebenarnya;
+- backend REST API;
+- persistent database;
 - supplier management;
+- product management;
+- warehouse management;
 - inventory movement history;
 - audit log;
+- notification system;
 - pagination;
-- end-to-end testing menggunakan Playwright atau Cypress.
+- server-side filtering;
+- end-to-end testing menggunakan Playwright atau Cypress;
+- advanced reporting dan chart;
+- export report.
 
 ---
 
 ## Kesimpulan
 
-ProcureFlow dibuat untuk menunjukkan implementasi frontend yang terstruktur dengan fokus pada business flow, validasi, server state, role-based action, mock API, responsive design, dan automated testing.
+ProcureFlow dibuat untuk menunjukkan implementasi frontend procurement yang terstruktur dan saling terhubung.
 
-Arsitektur project dibuat agar mudah dipahami dan tetap cukup dekat dengan pola aplikasi production sehingga mock API dapat diganti dengan backend sebenarnya tanpa harus mengubah keseluruhan frontend.
+Core business flow:
+
+```text
+Purchase Request
+      ↓
+Approval
+      ↓
+Purchase Order
+      ↓
+Goods Receipt
+      ↓
+Inventory Update
+```
+
+Project menggunakan API abstraction, MSW, centralized mock database, TanStack Query, role-based interaction, validation, responsive design, automated testing, serta design system yang mengacu pada Figma.
+
+Arsitektur dibuat agar cukup dekat dengan pola aplikasi production sehingga mock API dapat diganti dengan backend sebenarnya tanpa perlu merombak keseluruhan frontend.

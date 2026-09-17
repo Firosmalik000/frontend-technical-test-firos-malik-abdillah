@@ -54,9 +54,8 @@ const AppSidebar = () => {
   const { data: purchaseRequestCount = 0 } = useQuery({
     queryKey: ['purchase-requests'],
     queryFn: getPurchaseRequests,
-    select: (data) => data.filter((request) => request.status !== 'APPROVED').length,
+    select: (data) => data.filter((request) => request.status !== 'APPROVED' && request.status !== 'REJECTED').length,
   });
-
   const normalizedFilter = filter.trim().toLowerCase();
 
   const roleNavigation = role === 'APPROVER' ? navigation.filter((item) => item.to === '/purchase-requests') : navigation;

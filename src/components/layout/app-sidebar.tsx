@@ -138,7 +138,7 @@ const AppSidebar = () => {
 
       {/* Footer */}
       <div className="hidden border-t border-white/10 px-5 py-4 md:block">
-        <p className="text-xs text-white/50">ProcureFlow v1.0</p>
+        <p className="text-xs text-white/50">ProcureFlow</p>
       </div>
     </aside>
   );

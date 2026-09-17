@@ -12,7 +12,7 @@ const CreatePurchaseRequestPage = () => {
     mutationFn: createPurchaseRequest,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['purchase-requests'] });
-
+      queryClient.invalidateQueries({ queryKey: ['purchase-orders'] });
       navigate({ to: '/purchase-requests/$id', params: { id: data.id } });
     },
   });

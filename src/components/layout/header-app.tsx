@@ -1,9 +1,16 @@
-import { getCurrentRole, setRole, type UserRole } from '@/lib/role';
+import { type UserRole } from '@/lib/role';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useRole } from '@/context/role-context';
+import { useNavigate } from '@tanstack/react-router';
 
 const HeaderApp = () => {
-  const role = getCurrentRole();
+  const { role, changeRole } = useRole();
 
+  const navigate = useNavigate();
+
+  if (role === 'APPROVER') {
+    navigate({ to: '/purchase-requests' });
+  }
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-[#E6E9ED] bg-white px-3 sm:px-6">
       <div className="hidden sm:block">
@@ -18,7 +25,7 @@ const HeaderApp = () => {
         <div className="leading-tight">
           <p className="hidden text-sm font-medium md:block">John Doe</p>
 
-          <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
+          <Select value={role} onValueChange={(value) => changeRole(value as UserRole)}>
             <SelectTrigger className="h-8 w-28 sm:w-32">
               <SelectValue />
             </SelectTrigger>

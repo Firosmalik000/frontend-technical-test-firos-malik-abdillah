@@ -8,9 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { FormatDate, FormatStatus } from '@/lib/utils';
 import { ErrorState, LoadingState, StatusBadge } from '@/components/common';
 import { Button } from '@/components/ui/button';
-import { getCurrentRole } from '@/lib/role';
 import { approvePurchaseRequest, rejectPurchaseRequest, submitPurchaseRequest } from '@/api/purchase-requests';
 import { useState } from 'react';
+import { useRole } from '@/context/role-context';
 
 const PurchaseRequestDetailPage = () => {
   const { id } = useParams({
@@ -21,7 +21,7 @@ const PurchaseRequestDetailPage = () => {
   const [rejectionReason, setRejectionReason] = useState('');
 
   const [rejectionError, setRejectionError] = useState('');
-  const role = getCurrentRole();
+  const role = useRole();
   const queryClient = useQueryClient();
 
   const refreshData = () => {
@@ -62,6 +62,7 @@ const PurchaseRequestDetailPage = () => {
     return <ErrorState title="Failed to load purchase requests" desc="Purchase request data could not be loaded." onRetry={() => void purchaseRequestsQuery.refetch()} />;
   }
   const data = purchaseRequestsQuery.data;
+  console.log({ role });
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -73,7 +74,7 @@ const PurchaseRequestDetailPage = () => {
           </Link>
 
           <div className="flex flex-wrap gap-2">
-            {role === 'USER' && data.status === 'DRAFT' && (
+            {role.role === 'USER' && data.status === 'DRAFT' && (
               <>
                 <Button variant="outline" asChild>
                   <Link to="/purchase-requests/edit/$id" params={{ id: data.id }}>
@@ -94,7 +95,7 @@ const PurchaseRequestDetailPage = () => {
               </>
             )}
 
-            {role === 'APPROVER' && data.status === 'SUBMITTED' && (
+            {role.role === 'APPROVER' && data.status === 'SUBMITTED' && (
               <>
                 <Button
                   onClick={() => {

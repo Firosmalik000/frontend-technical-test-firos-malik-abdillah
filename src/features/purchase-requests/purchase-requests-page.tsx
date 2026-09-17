@@ -5,7 +5,7 @@ import { FormatDate, FormatStatus } from '@/lib/utils';
 
 import type { PurchaseRequestStatus } from '@/types/purchase-request';
 import { useState } from 'react';
-import { Check, Pencil, Search } from 'lucide-react';
+import { Pencil, Search, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from '@tanstack/react-router';
@@ -13,13 +13,14 @@ import { PurchaseStatus } from './status';
 import { EmptyState, ErrorState, LoadingState, StatusBadge } from '@/components/common';
 import { Button } from '@/components/ui/button';
 import { submitPurchaseRequest } from '@/api/purchase-requests';
-import { getCurrentRole } from '@/lib/role';
+import { useRole } from '@/context/role-context';
 
 export function PurchaseRequestsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<PurchaseRequestStatus | 'All'>('All');
   //   const [idData, setIdData] = useState('');
   const purchaseRequestsQuery = useQuery(purchaseRequestQueries.all());
+  const role = useRole();
 
   const queryClient = useQueryClient();
 
@@ -30,7 +31,6 @@ export function PurchaseRequestsPage() {
       queryClient.invalidateQueries({ queryKey: ['purchase-request', id] });
     },
   });
-  //   console.log(idData);
   if (purchaseRequestsQuery.isPending) {
     return <LoadingState title="Loading purchase requests..." />;
   }
@@ -51,13 +51,12 @@ export function PurchaseRequestsPage() {
 
     return match && matchStatus;
   });
-  const role = getCurrentRole();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Purchase Requests</h1>
-        {role === 'USER' && (
+        {role.role === 'USER' && (
           <Button asChild>
             <Link to="/purchase-requests/new">Create</Link>
           </Button>
@@ -107,7 +106,7 @@ export function PurchaseRequestsPage() {
                     <TableCell className="font-medium text-[#043C86]">{index + 1}</TableCell>
                     <TableCell className="font-medium text-[#043C86]">
                       <div className="flex gap-x-2">
-                        {data.status === 'DRAFT' && role === 'USER' ? (
+                        {data.status === 'DRAFT' && role.role === 'USER' ? (
                           <div className="flex gap-x-2">
                             <Button variant="outline" asChild aria-label="Edit purchase request">
                               <Link to="/purchase-requests/edit/$id" params={{ id: data.id }}>
@@ -116,7 +115,7 @@ export function PurchaseRequestsPage() {
                             </Button>
 
                             <Button aria-label="Submit purchase request" variant="outline" onClick={() => submitMutation.mutate(data.id)} disabled={submitMutation.isPending}>
-                              <Check className="text-sm text-green-500" />
+                              <Send className="text-sm text-green-500" />
                             </Button>
                           </div>
                         ) : (

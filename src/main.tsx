@@ -8,6 +8,7 @@ import './index.css';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/query-client';
 import { enableMocking } from './mocks/enable-mocking';
+import { RoleProvider } from './context/role-context';
 
 const router = createRouter({
   routeTree,
@@ -28,7 +29,9 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <RoleProvider>
+        <RouterProvider router={router} />
+      </RoleProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 );

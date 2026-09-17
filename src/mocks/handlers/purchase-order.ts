@@ -1,16 +1,15 @@
 import { delay, http, HttpResponse } from 'msw';
-import { purchaseOrders } from '../data/purchase-order';
-import { inventories } from '../data/inventory';
+import { db } from '../data/data';
 
 export const purchaseOrderHandler = [
   http.get('/api/purchase-orders', async () => {
     await delay(500);
 
-    return HttpResponse.json(purchaseOrders);
+    return HttpResponse.json(db.purchaseOrders);
   }),
   http.get(`/api/purchase-orders/:id`, async ({ params }) => {
     await delay(500);
-    const data = purchaseOrders.find((item) => item.id === params.id);
+    const data = db.purchaseOrders.find((item) => item.id === params.id);
 
     if (!data) {
       return HttpResponse.json(
@@ -28,7 +27,7 @@ export const purchaseOrderHandler = [
   http.post('/api/purchase-orders/:id/receipt', async ({ params, request }) => {
     await delay(500);
 
-    const purchaseOrder = purchaseOrders.find((order) => order.id === params.id);
+    const purchaseOrder = db.purchaseOrders.find((order) => order.id === params.id);
 
     if (!purchaseOrder) {
       return HttpResponse.json({ message: 'Purchase Order not found' }, { status: 404 });
@@ -51,7 +50,7 @@ export const purchaseOrderHandler = [
       if (!orderItem) {
         return HttpResponse.json({ message: 'Product not found' }, { status: 400 });
       }
-      const inventory = inventories.find((item) => item.productId === receivedItem.productId && item.warehouseId === purchaseOrder.warehouseId);
+      const inventory = db.inventories.find((item) => item.productId === receivedItem.productId && item.warehouseId === purchaseOrder.warehouseId);
 
       if (!inventory) return HttpResponse.json({ message: 'Inventory item is not found' }, { status: 400 });
 
@@ -64,7 +63,7 @@ export const purchaseOrderHandler = [
 
     for (const receivedItem of body.items) {
       const orderItem = purchaseOrder.items.find((item) => item.productId === receivedItem.productId);
-      const inventoryItem = inventories.find((item) => item.productId === receivedItem.productId && item.warehouseId === purchaseOrder.warehouseId);
+      const inventoryItem = db.inventories.find((item) => item.productId === receivedItem.productId && item.warehouseId === purchaseOrder.warehouseId);
 
       if (orderItem && inventoryItem) {
         orderItem.receivedQuantity += receivedItem.quantity;

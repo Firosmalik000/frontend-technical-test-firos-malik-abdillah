@@ -9,5 +9,4 @@ export const getCurrentRole = () => {
 
 export function setRole(role: UserRole) {
   localStorage.setItem('role', role);
-  window.location.reload();
 }

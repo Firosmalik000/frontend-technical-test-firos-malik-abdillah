@@ -12,6 +12,7 @@ export type PurchaseOrder = {
   id: string;
   poNumber: string;
   supplier: string;
+  purchaseRequestId: string;
   warehouseId: string;
   warehouseName: string;
   status: PurchaseOrderStatus;

@@ -1,48 +1,19 @@
 import { delay, http, HttpResponse } from 'msw';
 
-import { purchaseRequests } from '../data/purchase-requests';
-const warehouses = [
-  {
-    id: 'wh-jakarta',
-    name: 'Jakarta Warehouse',
-  },
-  {
-    id: 'wh-bandung',
-    name: 'Bandung Warehouse',
-  },
-];
+import { db } from '../data/data';
+import type { PurchaseOrder } from '@/types/purchase-order';
 
-const products = [
-  {
-    id: 'product-001',
-    name: 'Industrial Oil',
-    sku: 'OIL-001',
-    unit: 'PCS',
-  },
-  {
-    id: 'product-002',
-    name: 'Safety Gloves',
-    sku: 'SAFE-001',
-    unit: 'BOX',
-  },
-  {
-    id: 'product-003',
-    name: 'Packing Tape',
-    sku: 'PACK-001',
-    unit: 'ROLL',
-  },
-];
 export const purchaseRequestHandlers = [
   http.get('/api/purchase-requests', async () => {
     await delay(500);
 
-    return HttpResponse.json(purchaseRequests);
+    return HttpResponse.json(db.purchaseRequests);
   }),
   // request by id
   http.get(`/api/purchase-requests/:id`, async ({ params }) => {
     await delay(500);
 
-    const purchaseRequestById = purchaseRequests.find((item) => item.id === params.id);
+    const purchaseRequestById = db.purchaseRequests.find((item) => item.id === params.id);
     if (!purchaseRequestById) {
       return HttpResponse.json(
         {
@@ -59,9 +30,9 @@ export const purchaseRequestHandlers = [
   http.post('/api/purchase-requests', async ({ request }) => {
     await delay(500);
     const body = (await request.json()) as { warehouseId: string; requestedBy: string; items: { productId: string; quantity: number }[] };
-    const id = String(purchaseRequests.length + 1);
+    const id = String(db.purchaseRequests.length + 1);
 
-    const warehouse = warehouses.find((item) => item.id === body.warehouseId);
+    const warehouse = db.warehouses.find((item) => item.id === body.warehouseId);
 
     const newItem = {
       id: id,
@@ -72,7 +43,7 @@ export const purchaseRequestHandlers = [
       status: 'DRAFT' as const,
       createdAt: new Date().toISOString(),
       items: body.items.map((item) => {
-        const product = products.find((prod) => prod.id === item.productId);
+        const product = db.products.find((prod) => prod.id === item.productId);
         return {
           productId: item.productId,
           productName: product?.name ?? '-',
@@ -83,7 +54,7 @@ export const purchaseRequestHandlers = [
       }),
     };
 
-    purchaseRequests.push(newItem);
+    db.purchaseRequests.push(newItem);
 
     return HttpResponse.json(newItem, { status: 201 });
   }),
@@ -92,13 +63,13 @@ export const purchaseRequestHandlers = [
 
     const body = (await request.json()) as { warehouseId: string; requestedBy: string; items: { productId: string; quantity: number }[] };
 
-    const index = purchaseRequests.findIndex((item) => item.id === params.id);
+    const index = db.purchaseRequests.findIndex((item) => item.id === params.id);
 
     if (index === -1) {
       return HttpResponse.json({ message: 'Purchase Request not found' }, { status: 404 });
     }
 
-    if (purchaseRequests[index].status !== 'DRAFT') {
+    if (db.purchaseRequests[index].status !== 'DRAFT') {
       return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 400 });
     }
 
@@ -131,20 +102,20 @@ export const purchaseRequestHandlers = [
       };
     });
 
-    purchaseRequests[index] = {
-      ...purchaseRequests[index],
+    db.purchaseRequests[index] = {
+      ...db.purchaseRequests[index],
       warehouseId: body.warehouseId,
       warehouseName,
       requestedBy: body.requestedBy,
       items,
     };
 
-    return HttpResponse.json(purchaseRequests[index]);
+    return HttpResponse.json(db.purchaseRequests[index]);
   }),
 
   http.patch('/api/purchase-requests/:id/submit', async ({ params }) => {
     await delay(500);
-    const data = purchaseRequests.find((item) => item.id === params.id);
+    const data = db.purchaseRequests.find((item) => item.id === params.id);
     if (!data) {
       return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
     }
@@ -157,21 +128,52 @@ export const purchaseRequestHandlers = [
   }),
   http.patch('/api/purchase-requests/:id/approve', async ({ params }) => {
     await delay(500);
-    const data = purchaseRequests.find((item) => item.id === params.id);
+    const data = db.purchaseRequests.find((item) => item.id === params.id);
     if (!data) {
       return HttpResponse.json({ message: 'Purchase request not found' }, { status: 404 });
     }
     if (data.status !== 'SUBMITTED') {
-      return HttpResponse.json({ message: 'Only DRAFT can be edited' }, { status: 400 });
+      return HttpResponse.json({ message: 'Only SUBMITTED request  can be approved ' }, { status: 400 });
     }
 
     data.status = 'APPROVED';
+
+    const existingPurchaseOrder = db.purchaseOrders.find((item) => item.purchaseRequestId === params.id);
+
+    if (!existingPurchaseOrder) {
+      const sequence = db.purchaseOrders.length + 1;
+
+      const newOrder: PurchaseOrder = {
+        id: `po-${String(sequence).padStart(3, '0')}`,
+        poNumber: `PO-2026-${String(db.purchaseOrders.length + 1).padStart(3, '0')}`,
+        purchaseRequestId: data.id,
+        warehouseId: data.warehouseId,
+        warehouseName: data.warehouseName,
+        supplier: db?.suppliers[0]?.name ?? '-',
+        status: 'ORDERED',
+        createdAt: new Date().toISOString(),
+        items: data.items.map((item) => ({
+          productId: item.productId,
+
+          productName: item.productName,
+
+          sku: item.sku,
+
+          orderedQuantity: item.quantity,
+
+          receivedQuantity: 0,
+
+          unit: item.unit,
+        })),
+      };
+      db.purchaseOrders.push(newOrder);
+    }
     return HttpResponse.json(data);
   }),
   http.patch('/api/purchase-requests/:id/reject', async ({ params, request }) => {
     await delay(500);
 
-    const data = purchaseRequests.find((item) => item.id === params.id);
+    const data = db.purchaseRequests.find((item) => item.id === params.id);
 
     if (!data) {
       return HttpResponse.json({ message: 'Purchase Request not found' }, { status: 404 });

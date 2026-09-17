@@ -9,12 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { FormatDate, FormatStatus } from '@/lib/utils';
-import { getCurrentRole } from '@/lib/role';
+
 import { useState } from 'react';
 import { recordGoodReceipt } from '@/api/purchase-order';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PurchaseOrderStatusVariant } from './status';
+import { useRole } from '@/context/role-context';
 
 const PurchaseOrderDetailPage = () => {
   const { id } = useParams({
@@ -23,7 +24,7 @@ const PurchaseOrderDetailPage = () => {
   const [receiveQty, setReceiveQty] = useState<Record<string, number>>({});
   const [validationError, setValidationError] = useState('');
   const purchaseOrderQuery = useQuery(purchaseOrderQueries.detail(id));
-  const role = getCurrentRole();
+  const { role } = useRole();
   const queryClient = useQueryClient();
 
   const receiptMutation = useMutation({

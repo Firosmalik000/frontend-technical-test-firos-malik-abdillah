@@ -2,8 +2,8 @@ import { Link } from '@tanstack/react-router';
 import { BarChart3, Boxes, ClipboardList, FileCheck2, LayoutDashboard, PackageCheck, Search } from 'lucide-react';
 import { useState } from 'react';
 
-import { getCurrentRole } from '@/lib/role';
 import { Input } from '../ui/input';
+import { useRole } from '@/context/role-context';
 
 const navigation = [
   {
@@ -42,8 +42,7 @@ const extensionNavigation = [
 ];
 
 const AppSidebar = () => {
-  const role = getCurrentRole();
-
+  const { role } = useRole();
   const [filter, setFilter] = useState('');
 
   const normalizedFilter = filter.trim().toLowerCase();
